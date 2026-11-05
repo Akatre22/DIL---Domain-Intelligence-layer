@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dil-banking"
+version = "1.0.0"
+description = "Domain Intelligence Layer (DIL) for Banking - Enterprise domain reasoning, deterministic rules, and role-governed context for LLMs"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "DIL Architecture Team", email = "architecture@dil.ai" }
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = []
+
+[project.optional-dependencies]
+storage = [
+    "pyarrow>=12.0.0",
+]
+openai = [
+    "openai>=1.0.0",
+    "python-dotenv>=1.0.0",
+]
+dev = [
+    "pytest>=7.0",
+    "build>=1.0.0",
+    "twine>=4.0.0",
+]
+all = [
+    "pyarrow>=12.0.0",
+    "openai>=1.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.parquet", "*.lock"]
+"dil" = [
+    "roles/predefined/*.json",
+    "domains/*/*/*.json",
+    "domains/*/*/*/*.json",
+    "domains/*/*/*/*.parquet",
+    "domains/*/*/*/*.lock",
+]

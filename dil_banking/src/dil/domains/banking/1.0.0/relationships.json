@@ -1,0 +1,110 @@
+[
+  {
+    "source": "loan.home",
+    "relation": "governed_by_metric",
+    "target": "loan.ltv",
+    "description": "Home loan amount is capped by the collateral value via the Loan-to-Value (LTV) ratio."
+  },
+  {
+    "source": "loan.home",
+    "relation": "governed_by_metric",
+    "target": "loan.dti",
+    "description": "Home loan sanction is constrained by the borrower's disposable monthly income via DTI / FOIR."
+  },
+  {
+    "source": "loan.home",
+    "relation": "repaid_via",
+    "target": "loan.emi",
+    "description": "Home loan principal and interest are amortized and serviced through monthly EMI payments."
+  },
+  {
+    "source": "loan.home",
+    "relation": "secured_by",
+    "target": "collateral",
+    "description": "Home loans are secured by an equitable or registered mortgage on the acquired residential property."
+  },
+  {
+    "source": "loan.eligibility",
+    "relation": "evaluated_against",
+    "target": "credit.score",
+    "description": "Credit score is a primary filter during the loan eligibility assessment."
+  },
+  {
+    "source": "loan.eligibility",
+    "relation": "constrained_by",
+    "target": "loan.dti",
+    "description": "Fixed monthly debt payments (including proposed EMI) cannot exceed the lender's DTI ceiling."
+  },
+  {
+    "source": "customer",
+    "relation": "subject_to_compliance",
+    "target": "kyc",
+    "description": "Every customer relationship requires formal KYC verification and ongoing due diligence."
+  },
+  {
+    "source": "customer",
+    "relation": "monitored_for",
+    "target": "aml",
+    "description": "Customer transactions are monitored against suspicious activity patterns and AML rules."
+  },
+  {
+    "source": "account.savings",
+    "relation": "earns",
+    "target": "deposit.interest",
+    "description": "Savings account balances accrue interest calculated according to product rate terms."
+  },
+  {
+    "source": "loan.home",
+    "relation": "exposes_to",
+    "target": "risk.credit",
+    "description": "Home lending exposes the bank to default risk if borrower repayment capacity falters."
+  },
+  {
+    "source": "credit.iracp_classification",
+    "relation": "triggered_by_metric",
+    "target": "days_past_due",
+    "description": "IRACP loan asset classifications (Standard, SMA-0/1/2, NPA) are strictly triggered by days past due (DPD)."
+  },
+  {
+    "source": "credit.sme_working_capital_nayak",
+    "relation": "constrained_by",
+    "target": "mpbf",
+    "description": "Working capital limits for MSMEs are capped at 20% of projected annual sales turnover under Nayak Committee MPBF formula."
+  },
+  {
+    "source": "digital_lending.kfs_apr",
+    "relation": "mandatory_disclosure_for",
+    "target": "digital_loan",
+    "description": "Key Fact Statement (KFS) detailing APR and cooling-off terms is mandatory before digital loan contract execution."
+  },
+  {
+    "source": "trade_finance.letter_of_credit",
+    "relation": "governed_by_statute",
+    "target": "ucp_600",
+    "description": "Commercial and standby letters of credit operate under the legal rules of ICC UCP 600."
+  },
+  {
+    "source": "deposits.dicgc_protection",
+    "relation": "insures_balances_of",
+    "target": "account.savings",
+    "description": "DICGC covers savings, current, and fixed deposits up to a statutory ceiling of ₹5 Lakhs per depositor."
+  },
+  {
+    "source": "regulatory.psl_mandate",
+    "relation": "mandated_allocation_from",
+    "target": "bank_advances",
+    "description": "Commercial banks must allocate at least 40% of Adjusted Net Bank Credit (ANBC) to designated priority sectors."
+  },
+  {
+    "source": "capital_adequacy.crar",
+    "relation": "solvency_requirement_for",
+    "target": "bank",
+    "description": "Capital to Risk-Weighted Assets Ratio (CRAR) mandates minimum capital adequacy (9% for banks, 15% for HFCs)."
+  },
+  {
+    "source": "lending.gold_loan",
+    "relation": "governed_by_metric",
+    "target": "loan.ltv",
+    "description": "Non-agricultural gold loans are capped at 75% LTV against pure gold weight."
+  }
+]

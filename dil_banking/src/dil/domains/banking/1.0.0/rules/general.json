@@ -1,0 +1,55 @@
+[
+  {
+    "id": "RULE-GEN-AGE-001",
+    "title": "Minimum Borrower Age",
+    "category": "eligibility",
+    "jurisdiction": "global",
+    "parameter": "applicant_age",
+    "operator": ">=",
+    "threshold": 21,
+    "unit": "years",
+    "on_fail": "reject",
+    "description": "Applicant must have reached legal contractual adulthood and minimum earning age (21 years).",
+    "source_id": "SRC-BASEL-RETAIL-GUIDELINES"
+  },
+  {
+    "id": "RULE-GEN-AGE-002",
+    "title": "Maximum Borrower Age at Maturity",
+    "category": "eligibility",
+    "jurisdiction": "global",
+    "parameter": "age_at_maturity",
+    "operator": "<=",
+    "threshold": 65,
+    "unit": "years",
+    "on_fail": "refer_to_senior_credit",
+    "description": "Loan tenure must conclude before or at normal retirement age (65 years for salaried applicants).",
+    "source_id": "SRC-BASEL-RETAIL-GUIDELINES"
+  },
+  {
+    "id": "RULE-GEN-DTI-001",
+    "title": "Baseline Maximum Debt-to-Income (DTI)",
+    "category": "affordability",
+    "jurisdiction": "global",
+    "parameter": "dti_ratio",
+    "operator": "<=",
+    "threshold": 0.50,
+    "unit": "ratio",
+    "on_fail": "refer_to_senior_credit",
+    "description": "Aggregate monthly debt obligations (existing debt + new loan EMI) should not exceed 50% of verified net income.",
+    "source_id": "SRC-GLOBAL-CREDIT-STANDARDS"
+  },
+  {
+    "id": "RULE-GEN-LTV-001",
+    "title": "General Residential Mortgage LTV Ceiling",
+    "category": "collateral_risk",
+    "jurisdiction": "global",
+    "parameter": "ltv_ratio",
+    "operator": "<=",
+    "threshold": 0.80,
+    "unit": "ratio",
+    "on_fail": "reject",
+    "description": "General maximum loan-to-value ceiling for secured residential property finance is 80%.",
+    "source_id": "SRC-GLOBAL-CREDIT-STANDARDS"
+  }
+]
+

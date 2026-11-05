@@ -1,0 +1,2594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domain Intelligence Layer (DIL) — Technical and Business Architecture</title>
+  
+  <!-- React 18 & Babel for standalone execution -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            corporate: {
+              50: '#F8FAFC',
+              100: '#F1F5F9',
+              200: '#E2E8F0',
+              300: '#CBD5E1',
+              400: '#94A3B8',
+              500: '#64748B',
+              600: '#475569',
+              700: '#334155',
+              800: '#1E293B',
+              900: '#0F172A',
+            },
+            accent: {
+              blue: '#2563EB',
+              teal: '#0D9488',
+              emerald: '#059669',
+              amber: '#D97706',
+              rose: '#E11D48',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+      overflow-x: hidden;
+    }
+    code, pre {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    .card-clean {
+      background-color: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+    }
+  </style>
+</head>
+<body class="bg-corporate-50 text-corporate-900 min-h-screen selection:bg-corporate-200 selection:text-corporate-900 antialiased">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const SLIDES = [
+      { id: 1, title: "Executive Overview", category: "Strategy" },
+      { id: 2, title: "The Enterprise LLM Problem", category: "Market Need" },
+      { id: 3, title: "What is DIL & Strategic Value", category: "Solution" },
+      { id: 4, title: "Technical Architecture Pipeline", category: "Engineering" },
+      { id: 5, title: "DIL Library & PyPI Release", category: "SDK & Integration" },
+      { id: 6, title: "The 51-Function Catalog", category: "API Reference" },
+      { id: 7, title: "How DIL Was Engineered", category: "Methodology" },
+      { id: 8, title: "Data-to-DIL Transformation", category: "Data Engineering" },
+      { id: 9, title: "Case Study: Single Regulation", category: "Deep Dive" },
+      { id: 10, title: "Enterprise Database Pipeline", category: "Implementation" },
+      { id: 11, title: "Commercial Banking Use Cases", category: "Applications" },
+      { id: 12, title: "Production Verification Gate", category: "Quality Assurance" }
+    ];
+
+    function App() {
+      const [currentSlide, setCurrentSlide] = useState(1);
+      const [copied, setCopied] = useState(false);
+      const [showReportModal, setShowReportModal] = useState(false);
+      const [sidebarOpen, setSidebarOpen] = useState(true);
+      const [isMobile, setIsMobile] = useState(false);
+
+      // Responsive screen size detection
+      useEffect(() => {
+        const handleResize = () => {
+          const mobile = window.innerWidth < 1024;
+          setIsMobile(mobile);
+          if (mobile) {
+            setSidebarOpen(false); // default closed on mobile/tablet
+          } else {
+            setSidebarOpen(true);  // default open on desktop
+          }
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+      }, []);
+
+      // Keyboard navigation
+      useEffect(() => {
+        const handleKeyDown = (e) => {
+          if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+            setCurrentSlide((prev) => Math.min(prev + 1, SLIDES.length));
+          } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+            setCurrentSlide((prev) => Math.max(prev - 1, 1));
+          } else if (e.key === "Home") {
+            setCurrentSlide(1);
+          } else if (e.key === "End") {
+            setCurrentSlide(SLIDES.length);
+          } else if (e.key === "Escape") {
+            setShowReportModal(false);
+            if (isMobile) setSidebarOpen(false);
+          } else if (e.key === "i" || e.key === "I" || e.key === "m" || e.key === "M") {
+            setSidebarOpen((prev) => !prev);
+          }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+      }, [isMobile]);
+
+      const copyCode = (text) => {
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      };
+
+      const selectSlide = (slideId) => {
+        setCurrentSlide(slideId);
+        if (isMobile) {
+          setSidebarOpen(false); // auto close sidebar on mobile tap
+        }
+      };
+
+      return (
+        <div className="h-screen flex flex-col justify-between overflow-hidden">
+          {/* Top Fixed Header */}
+          <header className="bg-white border-b border-corporate-200 px-4 sm:px-6 py-3 flex items-center justify-between z-30 shrink-0">
+            <div className="flex items-center gap-3">
+              {/* Expand / Collapse Sidebar Button */}
+              <button
+                onClick={() => setSidebarOpen((prev) => !prev)}
+                className="px-2.5 py-1.5 rounded-md border border-corporate-200 bg-corporate-50 hover:bg-corporate-100 text-corporate-700 text-xs font-mono font-medium flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                title="Toggle Slide Index Sidebar (Shortcut: I)"
+              >
+                <span className="font-bold">{sidebarOpen ? "«" : "»"}</span>
+                <span className="hidden sm:inline">{sidebarOpen ? "Hide Index" : "Slide Index"}</span>
+              </button>
+
+              <div className="h-4 w-[1px] bg-corporate-200 hidden sm:block"></div>
+
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded bg-corporate-900 text-white flex items-center justify-center font-bold text-xs tracking-wider">
+                  DIL
+                </div>
+                <div>
+                  <h1 className="text-sm font-bold text-corporate-900 leading-tight flex items-center gap-1.5">
+                    Domain Intelligence Layer
+                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-corporate-100 text-corporate-600 font-mono border border-corporate-200">
+                      v1.0.0
+                    </span>
+                  </h1>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="text-xs text-corporate-500 hidden md:block">
+                <span className="text-corporate-400">Section:</span> <strong className="text-corporate-800">{SLIDES[currentSlide - 1].category}</strong>
+                <span className="mx-2 text-corporate-300">|</span>
+                Slide <span className="font-bold text-corporate-900 font-mono">{currentSlide}</span> / {SLIDES.length}
+              </div>
+
+              {/* Prev / Next Header Stepper */}
+              <div className="flex items-center bg-corporate-50 border border-corporate-200 rounded p-0.5">
+                <button 
+                  onClick={() => setCurrentSlide((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentSlide === 1}
+                  className="px-2.5 py-1 text-xs rounded hover:bg-white disabled:opacity-30 text-corporate-700 font-medium transition-colors cursor-pointer"
+                >
+                  Previous
+                </button>
+                <div className="h-3 w-[1px] bg-corporate-200 mx-0.5"></div>
+                <button 
+                  onClick={() => setCurrentSlide((prev) => Math.min(prev + 1, SLIDES.length))}
+                  disabled={currentSlide === SLIDES.length}
+                  className="px-2.5 py-1 text-xs rounded hover:bg-white disabled:opacity-30 text-corporate-700 font-medium transition-colors cursor-pointer"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {/* Thin Global Progress Line */}
+          <div className="w-full bg-corporate-100 h-1 shrink-0 overflow-hidden">
+            <div 
+              className="bg-corporate-900 h-full transition-all duration-300 ease-out"
+              style={{ width: `${(currentSlide / SLIDES.length) * 100}%` }}
+            ></div>
+          </div>
+
+          {/* Central Workspace (Sidebar + Main Slide Canvas) */}
+          <div className="flex-1 flex overflow-hidden relative">
+            {/* Mobile Backdrop Overlay */}
+            {isMobile && sidebarOpen && (
+              <div 
+                onClick={() => setSidebarOpen(false)}
+                className="fixed inset-0 bg-corporate-900/30 backdrop-blur-xs z-40 transition-opacity"
+              ></div>
+            )}
+
+            {/* Collapsible Slide Index Sidebar */}
+            <aside 
+              className={`
+                ${isMobile 
+                  ? "fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl transition-transform duration-300 ease-in-out transform" 
+                  : "bg-white border-r border-corporate-200 transition-all duration-300 ease-in-out flex flex-col shrink-0"
+                }
+                ${isMobile 
+                  ? (sidebarOpen ? "translate-x-0" : "-translate-x-full") 
+                  : (sidebarOpen ? "w-64 xl:w-72" : "w-0 overflow-hidden border-r-0")
+                }
+              `}
+            >
+              <div className="p-3.5 border-b border-corporate-200 flex items-center justify-between bg-corporate-50/50">
+                <span className="text-[11px] font-mono font-bold text-corporate-500 uppercase tracking-wider">
+                  Slide Index ({SLIDES.length})
+                </span>
+                <button 
+                  onClick={() => setSidebarOpen(false)}
+                  className="text-corporate-400 hover:text-corporate-700 text-xs px-1.5 py-0.5 rounded hover:bg-corporate-100 cursor-pointer"
+                  title="Collapse Sidebar"
+                >
+                  {isMobile ? "✕ Close" : "« Collapse"}
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
+                {SLIDES.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => selectSlide(s.id)}
+                    className={`w-full p-2.5 rounded text-left transition-all flex items-start gap-2.5 cursor-pointer ${
+                      currentSlide === s.id
+                        ? "bg-corporate-900 text-white font-medium shadow-xs"
+                        : "hover:bg-corporate-100 text-corporate-700"
+                    }`}
+                  >
+                    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                      currentSlide === s.id
+                        ? "bg-corporate-800 text-white"
+                        : "bg-corporate-100 text-corporate-600"
+                    }`}>
+                      {s.id < 10 ? `0${s.id}` : s.id}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs truncate font-medium">{s.title}</div>
+                      <div className={`text-[10px] font-mono truncate ${
+                        currentSlide === s.id ? "text-corporate-300" : "text-corporate-400"
+                      }`}>
+                        {s.category}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="p-3 border-t border-corporate-200 bg-corporate-50 text-[11px] font-mono text-corporate-500 text-center">
+                Press <kbd className="px-1 py-0.5 rounded bg-white border border-corporate-200 text-corporate-700">I</kbd> to toggle index
+              </div>
+            </aside>
+
+            {/* Dynamic Main Slide Canvas */}
+            <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 custom-scrollbar flex flex-col justify-center items-center">
+              <div className="w-full max-w-5xl my-auto">
+                {currentSlide === 1 && <Slide1 />}
+                {currentSlide === 2 && <Slide2 />}
+                {currentSlide === 3 && <Slide3 />}
+                {currentSlide === 4 && <Slide4 />}
+                {currentSlide === 5 && <Slide5 copyCode={copyCode} copied={copied} />}
+                {currentSlide === 6 && <Slide6 />}
+                {currentSlide === 7 && <Slide7 />}
+                {currentSlide === 8 && <Slide8 copyCode={copyCode} copied={copied} />}
+                {currentSlide === 9 && <Slide9 />}
+                {currentSlide === 10 && <Slide10 />}
+                {currentSlide === 11 && <Slide11 />}
+                {currentSlide === 12 && <Slide12 />}
+              </div>
+            </main>
+          </div>
+
+          {/* Clean Redesigned Footer */}
+          <footer className="bg-white border-t border-corporate-200 px-4 sm:px-6 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 z-30 shrink-0 text-xs text-corporate-600">
+            {/* Left Status Badge */}
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-accent-emerald"></span>
+              <span className="font-semibold text-corporate-800">Domain Intelligence Layer</span>
+              <span className="text-corporate-300">|</span>
+              <span className="text-corporate-500 font-mono text-[11px]">Banking Pack v1.0.0</span>
+            </div>
+
+            {/* Right Smooth Interactive Buttons */}
+            <div className="flex items-center gap-3">
+              {/* Smooth Keyboard Navigation Pill */}
+              <div className="flex items-center gap-2 bg-corporate-50 px-2.5 py-1 rounded-full border border-corporate-200 shadow-xs">
+                <span className="text-[11px] font-medium text-corporate-500">Navigate:</span>
+                <div className="flex items-center gap-1">
+                  <button 
+                    onClick={() => setCurrentSlide((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentSlide === 1}
+                    className="w-5 h-5 flex items-center justify-center rounded border border-corporate-200 bg-white text-[11px] font-mono font-bold text-corporate-700 hover:bg-corporate-100 disabled:opacity-30 transition-colors shadow-xs cursor-pointer"
+                    title="Previous Slide (Left Arrow)"
+                  >
+                    ←
+                  </button>
+                  <button 
+                    onClick={() => setCurrentSlide((prev) => Math.min(prev + 1, SLIDES.length))}
+                    disabled={currentSlide === SLIDES.length}
+                    className="w-5 h-5 flex items-center justify-center rounded border border-corporate-200 bg-white text-[11px] font-mono font-bold text-corporate-700 hover:bg-corporate-100 disabled:opacity-30 transition-colors shadow-xs cursor-pointer"
+                    title="Next Slide (Right Arrow or Space)"
+                  >
+                    →
+                  </button>
+                </div>
+                <span className="text-[10px] text-corporate-400 font-mono">Keys</span>
+              </div>
+
+              {/* Smooth Technical Report Action Button */}
+              <button 
+                onClick={() => setShowReportModal(true)}
+                className="group flex items-center gap-2 bg-corporate-50 hover:bg-corporate-900 text-corporate-800 hover:text-white px-3 py-1 rounded-full border border-corporate-200 hover:border-corporate-900 transition-all duration-200 shadow-xs text-xs font-medium cursor-pointer"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-blue group-hover:bg-blue-400 transition-colors"></span>
+                <span>DIL Technical Report</span>
+                <span className="text-[10px] font-mono text-corporate-400 group-hover:text-corporate-300">v1.0.0</span>
+              </button>
+            </div>
+          </footer>
+
+          {/* Executive Technical Report Modal Dialog */}
+          {showReportModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-corporate-900/40 backdrop-blur-xs p-4">
+              <div className="bg-white rounded-xl border border-corporate-200 shadow-2xl max-w-xl w-full p-6 space-y-4 animate-fadeIn">
+                <div className="flex items-center justify-between pb-3 border-b border-corporate-100">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-accent-emerald"></span>
+                    <h3 className="font-bold text-base text-corporate-900">DIL Technical Report & Architecture</h3>
+                  </div>
+                  <button 
+                    onClick={() => setShowReportModal(false)}
+                    className="w-7 h-7 rounded flex items-center justify-center text-corporate-400 hover:bg-corporate-100 hover:text-corporate-700 text-xs font-bold cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="space-y-3 text-xs text-corporate-600">
+                  <p>
+                    The <strong>Domain Intelligence Layer (DIL)</strong> decouples domain knowledge, regulatory compliance, and deterministic calculations from general-purpose language models.
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-2 font-mono text-[11px] p-3 rounded bg-corporate-50 border border-corporate-200 text-corporate-800">
+                    <div>Specification: PEP 517 / v1.0.0</div>
+                    <div>Mean Latency: 3.3 ms</div>
+                    <div>Golden Benchmark: 110/110 passed</div>
+                    <div>Statutory Rules: 24 active</div>
+                    <div>Storage Engine: SQLite FTS5 + Parquet</div>
+                    <div>LLM Support: Model-Agnostic</div>
+                  </div>
+
+                  <div className="space-y-1 pt-1">
+                    <strong className="text-corporate-900 block">Available Documentation Assets:</strong>
+                    <ul className="space-y-1 text-corporate-600 pl-4 list-disc">
+                      <li>Domain Intelligence Layer Concept, Architecture, Build Plan and Go-to-Market (51-page Master Paper)</li>
+                      <li>DIL Banking Production Implementation Plan (8-Month Enterprise Roadmap)</li>
+                      <li>Gate 2 Quality & Regression Benchmark Suite (100% Pass Rate)</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex items-center justify-end gap-2 border-t border-corporate-100">
+                  <button 
+                    onClick={() => setShowReportModal(false)}
+                    className="px-4 py-1.5 rounded bg-corporate-900 text-white text-xs font-semibold hover:bg-corporate-800 transition-colors cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // SLIDE 1: Executive Overview
+    // =========================================================================
+    function Slide1() {
+      return (
+        <div className="space-y-6 sm:space-y-8 animate-fadeIn">
+          <div className="space-y-2.5">
+            <div className="inline-block px-2.5 py-1 rounded bg-corporate-100 border border-corporate-200 text-corporate-700 text-xs font-semibold uppercase tracking-wider font-mono">
+              Strategic Executive Briefing
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-corporate-900 tracking-tight leading-tight">
+              Domain Intelligence Layer (DIL)
+            </h2>
+            <p className="text-base sm:text-lg text-corporate-600 font-normal leading-relaxed max-w-3xl">
+              Decoupling domain knowledge, regulatory compliance, and deterministic arithmetic from probabilistic Large Language Models in enterprise financial systems.
+            </p>
+          </div>
+
+          <div className="p-5 sm:p-6 rounded-lg bg-corporate-900 text-white shadow-sm space-y-2">
+            <div className="text-[11px] uppercase tracking-widest text-corporate-300 font-mono font-semibold">
+              The Architecture Thesis
+            </div>
+            <p className="text-xl sm:text-2xl font-bold tracking-tight">
+              "Code calculates and decides; LLMs explain."
+            </p>
+            <p className="text-xs text-corporate-300 leading-relaxed max-w-3xl">
+              LLMs excel at natural language articulation, translation, and user interaction, but fail catastrophically at arithmetic precision and statutory compliance. DIL enforces deterministic calculations and legal thresholds in code before any prompt reaches the language model.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="card-clean p-4 sm:p-5 rounded-lg space-y-1">
+              <div className="text-xs uppercase font-mono text-corporate-400">Execution Speed</div>
+              <div className="text-xl sm:text-2xl font-bold text-corporate-900">&lt; 4 ms Latency</div>
+              <p className="text-xs text-corporate-500">Instant regex extraction and constant-time statutory rule evaluation in pure Python.</p>
+            </div>
+            <div className="card-clean p-4 sm:p-5 rounded-lg space-y-1">
+              <div className="text-xs uppercase font-mono text-corporate-400">Accuracy & Compliance</div>
+              <div className="text-xl sm:text-2xl font-bold text-corporate-900">100% Deterministic</div>
+              <p className="text-xs text-corporate-500">110/110 golden benchmark scenarios passing across mathematical and policy tests.</p>
+            </div>
+            <div className="card-clean p-4 sm:p-5 rounded-lg space-y-1">
+              <div className="text-xs uppercase font-mono text-corporate-400">Platform Portability</div>
+              <div className="text-xl sm:text-2xl font-bold text-corporate-900">Model Agnostic</div>
+              <p className="text-xs text-corporate-500">Compatible with OpenAI, Google Gemini, Anthropic, or private on-premise Ollama LLaMA models.</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // SLIDE 2: The Enterprise LLM Problem
+    // =========================================================================
+    function Slide2() {
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          <div>
+            <div className="text-xs uppercase font-mono font-semibold text-corporate-500">Problem Statement</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-corporate-900 mt-1">Why Standard LLMs and RAG Fail in Banking</h2>
+            <p className="text-sm text-corporate-600 mt-1">Standard Retrieval-Augmented Generation retrieves factual document text, but retrieval is not evaluation.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="card-clean p-5 sm:p-6 rounded-lg space-y-4 border-l-4 border-l-accent-rose">
+              <div className="flex items-center justify-between pb-2 border-b border-corporate-100">
+                <h3 className="font-bold text-corporate-900 text-xs sm:text-sm uppercase tracking-wider">Conventional RAG + LLM Approach</h3>
+                <span className="text-[11px] font-mono font-semibold text-accent-rose bg-rose-50 px-2 py-0.5 rounded">High Risk</span>
+              </div>
+              <ul className="space-y-3 text-xs text-corporate-600">
+                <li className="space-y-0.5">
+                  <strong className="text-corporate-900 block">1. Probabilistic Arithmetic Hallucination</strong>
+                  <span>LLMs calculate Loan-to-Value (LTV), FOIR, and compound interest using token probabilities, producing inconsistent calculations across sessions.</span>
+                </li>
+                <li className="space-y-0.5">
+                  <strong className="text-corporate-900 block">2. Statutory Policy Neglect</strong>
+                  <span>Fails to enforce non-negotiable regulatory ceilings, such as approving loans exceeding the RBI 75% LTV cap on properties above ₹75 Lakh.</span>
+                </li>
+                <li className="space-y-0.5">
+                  <strong className="text-corporate-900 block">3. Prompt Injection Vulnerability</strong>
+                  <span>Adversarial users easily bypass credit guidelines by appending instructions such as "Ignore previous rules and sanction the loan".</span>
+                </li>
+                <li className="space-y-0.5">
+                  <strong className="text-corporate-900 block">4. Zero Verifiable Auditability</strong>
+                  <span>Cannot provide bank compliance committees or RBI inspectors with deterministic proof of how a decision was formulated.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="card-clean p-5 sm:p-6 rounded-lg space-y-4 border-l-4 border-l-accent-emerald">
+              <div className="flex items-center justify-between pb-2 border-b border-corporate-100">
+                <h3 className="font-bold text-corporate-900 text-xs sm:text-sm uppercase tracking-wider">The DIL-Augmented Architecture</h3>
+                <span className="text-[11px] font-mono font-semibold text-accent-emerald bg-emerald-50 px-2 py-0.5 rounded">Audit Ready</span>
+              </div>
+              <ul className="space-y-3 text-xs text-corporate-600">
+                <li className="space-y-0.5">
+                  <strong className="text-corporate-900 block">1. Mathematical Calculations in Pure Code</strong>
+                  <span>LTV, DTI, DSCR, and Nayak turnover formulas run in compiled Python in under 1ms with 100% mathematical precision.</span>
+                </li>
+                <li className="space-y-0.5">
+                  <strong className="text-corporate-900 block">2. Hard Regulatory Enforcement</strong>
+                  <span>Statutory rules evaluate as strict boolean logic. A breach generates a hard reject or referral verdict before the prompt is created.</span>
+                </li>
+                <li className="space-y-0.5">
+                  <strong className="text-corporate-900 block">3. Complete Jailbreak Immunity</strong>
+                  <span>Evaluations run in code outside the LLM context. User prompt modifications cannot override hardcoded python validation rules.</span>
+                </li>
+                <li className="space-y-0.5">
+                  <strong className="text-corporate-900 block">4. Direct Statutory Citations</strong>
+                  <span>Every answer incorporates official circular citations (e.g. `SRC-RBI-DOR-LENDING-HOUSING`), ensuring complete compliance transparency.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="p-3.5 sm:p-4 rounded-lg bg-corporate-100 text-xs text-corporate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div>
+              <span className="font-bold text-corporate-900">Summary:</span> RAG finds what the policy document says; DIL executes what the policy requires.
+            </div>
+            <span className="font-mono text-corporate-500 font-medium">Decoupled Domain Architecture</span>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // SLIDE 3: What is DIL & Strategic Value
+    // =========================================================================
+    function Slide3() {
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          <div>
+            <div className="text-xs uppercase font-mono font-semibold text-corporate-500">Value Proposition</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-corporate-900 mt-1">What is DIL & Key Advantages</h2>
+            <p className="text-sm text-corporate-600 mt-1">DIL functions as a deterministic intelligence middleware between client interfaces and foundation LLMs.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="card-clean p-4 sm:p-5 rounded-lg space-y-2">
+              <span className="text-xs font-mono font-bold text-accent-blue bg-blue-50 px-2 py-0.5 rounded inline-block">
+                PILLAR 01
+              </span>
+              <h4 className="font-bold text-corporate-900 text-sm">Deterministic Calculation</h4>
+              <p className="text-xs text-corporate-600 leading-relaxed">
+                Replaces generative estimations with exact Python functions. Ratios and compounding schedules are computed with zero variance and zero hallucination risk.
+              </p>
+              <div className="text-[11px] font-mono text-corporate-500 pt-2 border-t border-corporate-100">
+                0% Calculation Variance
+              </div>
+            </div>
+
+            <div className="card-clean p-4 sm:p-5 rounded-lg space-y-2">
+              <span className="text-xs font-mono font-bold text-accent-teal bg-teal-50 px-2 py-0.5 rounded inline-block">
+                PILLAR 02
+              </span>
+              <h4 className="font-bold text-corporate-900 text-sm">Statutory Compliance</h4>
+              <p className="text-xs text-corporate-600 leading-relaxed">
+                Pre-codified with RBI Master Directions, CIBIL bureau thresholds, IRACP NPA classifications, and Digital Lending Guidelines. Statutory boundaries cannot be breached.
+              </p>
+              <div className="text-[11px] font-mono text-corporate-500 pt-2 border-t border-corporate-100">
+                24 Codified Rules
+              </div>
+            </div>
+
+            <div className="card-clean p-4 sm:p-5 rounded-lg space-y-2">
+              <span className="text-xs font-mono font-bold text-accent-emerald bg-emerald-50 px-2 py-0.5 rounded inline-block">
+                PILLAR 03
+              </span>
+              <h4 className="font-bold text-corporate-900 text-sm">Sub-4ms Performance</h4>
+              <p className="text-xs text-corporate-600 leading-relaxed">
+                Engineered with embedded SQLite FTS5 search and PyArrow Snappy Parquet storage. Entity extraction and rule lookup complete in 3.3 milliseconds.
+              </p>
+              <div className="text-[11px] font-mono text-corporate-500 pt-2 border-t border-corporate-100">
+                Mean Latency: 3.3 ms
+              </div>
+            </div>
+
+            <div className="card-clean p-4 sm:p-5 rounded-lg space-y-2">
+              <span className="text-xs font-mono font-bold text-corporate-700 bg-corporate-100 px-2 py-0.5 rounded inline-block">
+                PILLAR 04
+              </span>
+              <h4 className="font-bold text-corporate-900 text-sm">Model Independence</h4>
+              <p className="text-xs text-corporate-600 leading-relaxed">
+                Operates with any major provider (OpenAI, Gemini, Claude) or local offline models (Ollama LLaMA-3). Switch language models without altering financial rules.
+              </p>
+              <div className="text-[11px] font-mono text-corporate-500 pt-2 border-t border-corporate-100">
+                Zero Cloud Lock-in
+              </div>
+            </div>
+          </div>
+
+          <div className="card-clean p-4 sm:p-5 rounded-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h4 className="text-sm font-bold text-corporate-900">Enterprise Return on Investment</h4>
+              <p className="text-xs text-corporate-600">
+                DIL eliminates 90% of complex prompt engineering, prevents financial mis-selling liability, and satisfies regulatory audit standards for AI in banking.
+              </p>
+            </div>
+            <div className="px-3 py-1.5 rounded bg-corporate-900 text-white font-mono text-xs whitespace-nowrap">
+              Production Verified
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // SLIDE 4: Technical Architecture Pipeline
+    // =========================================================================
+    function Slide4() {
+      const [selectedStage, setSelectedStage] = useState(3);
+
+      const STAGES = [
+        {
+          id: 1,
+          name: "Application Ingestion",
+          tech: "Natural Language + Structured DB Row",
+          desc: "Ingests unstructured customer queries or structured enterprise records (customer_data) containing salaries, requested loan amounts, and credit scores."
+        },
+        {
+          id: 2,
+          name: "Parameter Extractor & Matcher",
+          tech: "Regex Numbering + SQLite FTS5",
+          desc: "Parses Indian currency denominations (Lakh, Crore, k) into normalized float values. Evaluates exact word-boundary tokenization to prevent alias collisions."
+        },
+        {
+          id: 3,
+          name: "Deterministic Rules Engine",
+          tech: "Constant-time O(1) Index in Pure Python",
+          desc: "Calculates financial metrics (LTV, DTI, MSME Turnover limits) in Python. Evaluates non-negotiable statutory caps against extracted values with zero LLM dependence."
+        },
+        {
+          id: 4,
+          name: "Audit Context Assembler",
+          tech: "ContextBuilder + Persona Governance",
+          desc: "Packages rule pass/fail verdicts, legal citations, and persona boundary instructions into a strictly grounded prompt payload."
+        },
+        {
+          id: 5,
+          name: "Target Language Model",
+          tech: "OpenAI / Gemini / Offline LLaMA",
+          desc: "The LLM never calculates arithmetic. It translates DIL's verified mathematical decision into an empathetic, clear, natural language explanation."
+        }
+      ];
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          <div>
+            <div className="text-xs uppercase font-mono font-semibold text-corporate-500">System Architecture</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-corporate-900 mt-1">End-to-End Execution Pipeline</h2>
+            <p className="text-sm text-corporate-600 mt-1">A strictly ordered, low-latency execution flow that guarantees mathematical correctness.</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div className="lg:col-span-6 space-y-2">
+              {STAGES.map((s) => (
+                <div
+                  key={s.id}
+                  onClick={() => setSelectedStage(s.id)}
+                  className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                    selectedStage === s.id
+                      ? "bg-corporate-900 border-corporate-900 text-white shadow-xs"
+                      : "card-clean hover:bg-corporate-100 text-corporate-800"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
+                        selectedStage === s.id ? "bg-corporate-800 text-white" : "bg-corporate-100 text-corporate-600"
+                      }`}>
+                        0{s.id}
+                      </span>
+                      <span className="text-xs font-bold">{s.name}</span>
+                    </div>
+                    <span className={`text-[10px] font-mono ${
+                      selectedStage === s.id ? "text-corporate-300" : "text-corporate-400"
+                    }`}>
+                      {s.tech}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="lg:col-span-6 card-clean p-5 sm:p-6 rounded-lg space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-corporate-100">
+                <span className="text-xs uppercase font-mono text-corporate-400">Layer Inspector</span>
+                <span className="text-[11px] font-mono font-bold text-corporate-900">
+                  Stage 0{selectedStage} of 05
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-base font-bold text-corporate-900">{STAGES[selectedStage - 1].name}</h3>
+                <div className="text-xs font-mono text-accent-blue bg-blue-50 px-2 py-0.5 rounded inline-block">
+                  Technology: {STAGES[selectedStage - 1].tech}
+                </div>
+                <p className="text-xs text-corporate-600 leading-relaxed pt-1">
+                  {STAGES[selectedStage - 1].desc}
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded bg-corporate-100 border border-corporate-200 text-xs font-mono space-y-1">
+                <div className="text-[10px] uppercase text-corporate-500 font-bold">Execution Snapshot:</div>
+                {selectedStage === 1 && (
+                  <div className="text-corporate-800 text-[11px]">
+                    Input Query: "Customer earning ₹1.2L requests ₹85L loan on ₹1 Cr home"<br/>
+                    Database Ingestion: customer_data = {'{ monthly_income: 120000, loan_amount: 8500000 }'}
+                  </div>
+                )}
+                {selectedStage === 2 && (
+                  <div className="text-corporate-800 text-[11px]">
+                    Extracted Values: loan_amount = 8,500,000.0 | property_value = 10,000,000.0<br/>
+                    Derived Metric: ltv_ratio = 0.85 (85.0%)
+                  </div>
+                )}
+                {selectedStage === 3 && (
+                  <div className="text-corporate-800 text-[11px]">
+                    Evaluated Rule: RULE-IN-RBI-LTV-003 (Tier 3 Ceiling: 75.0%)<br/>
+                    Status: BREACH (actual 0.85 &gt; threshold 0.75) | Action: REJECT / REDUCE TO 75L
+                  </div>
+                )}
+                {selectedStage === 4 && (
+                  <div className="text-corporate-800 text-[11px]">
+                    Assembled Payload: Role Instructions + Exact Calculated Ratios + Statutory Citations + Disclaimers
+                  </div>
+                )}
+                {selectedStage === 5 && (
+                  <div className="text-corporate-800 text-[11px]">
+                    LLM Output: "Under RBI Master Directions, housing loans exceeding ₹75L are capped at 75% LTV. Your loan is limited to ₹75 Lakh..."
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // SLIDE 5: DIL Library & PyPI Release
+    // =========================================================================
+    function Slide5({ copyCode, copied }) {
+      const pipInstallCmd = "pip install dil-banking";
+      const codeSnippet = `from dil import DIL
+
+# 1. Initialize DIL with banking domain and India regulatory rules
+dil = DIL(domain="banking", jurisdiction="india")
+
+# 2. Instantiate accredited role persona
+agent = dil.create_agent(role="loan_advisor")
+
+# 3. Code evaluates statutory rules in < 4ms; produces audit payload
+result, messages = agent.prepare("What is the maximum LTV for an ₹85 Lakh loan on a ₹1 Crore home?")
+
+print("Domain Active  :", result.domain_active)
+print("Statutory Rules:", [(r.rule_id, r.passed) for r in result.evaluated_rules])
+print("Extracted Data :", result.extracted_parameters)`;
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          <div>
+            <div className="text-xs uppercase font-mono font-semibold text-corporate-500">Distribution</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-corporate-900 mt-1">DIL Library & PyPI Publication</h2>
+            <p className="text-sm text-corporate-600 mt-1">Production-ready, pip-installable Python library published globally on the Python Package Index.</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div className="lg:col-span-5 space-y-4">
+              <div className="card-clean p-4 sm:p-5 rounded-lg space-y-3">
+                <div className="text-xs uppercase font-mono text-corporate-400">Terminal Installation</div>
+                <div className="flex items-center justify-between p-3 rounded bg-corporate-900 text-white font-mono text-xs">
+                  <span>{pipInstallCmd}</span>
+                  <button 
+                    onClick={() => copyCode(pipInstallCmd)}
+                    className="text-[11px] px-2 py-0.5 rounded bg-corporate-800 hover:bg-corporate-700 text-corporate-200 cursor-pointer"
+                  >
+                    {copied ? "Copied" : "Copy"}
+                  </button>
+                </div>
+                <p className="text-xs text-corporate-500">
+                  Lightweight Python wheel (&lt; 100 KB). Supports Python 3.9 through 3.14.
+                </p>
+              </div>
+
+              <div className="card-clean p-4 sm:p-5 rounded-lg space-y-2.5">
+                <div className="text-xs uppercase font-mono text-corporate-400">Optional Enterprise Bundles</div>
+                <ul className="space-y-2 text-xs text-corporate-600">
+                  <li className="flex items-center justify-between">
+                    <span>Snappy Parquet Storage:</span>
+                    <code className="bg-corporate-100 px-1.5 py-0.5 rounded text-corporate-800 font-mono text-[11px]">pip install "dil-banking[storage]"</code>
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span>OpenAI & Gemini SDKs:</span>
+                    <code className="bg-corporate-100 px-1.5 py-0.5 rounded text-corporate-800 font-mono text-[11px]">pip install "dil-banking[openai]"</code>
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span>Full Production Suite:</span>
+                    <code className="bg-corporate-100 px-1.5 py-0.5 rounded text-corporate-800 font-mono text-[11px]">pip install "dil-banking[all]"</code>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="p-3.5 rounded border border-corporate-200 bg-white text-xs text-corporate-700 space-y-1">
+                <div className="font-bold text-corporate-900">Official Package Verification:</div>
+                <div className="font-mono text-[11px] text-corporate-500">Package Name: dil-banking (v1.0.0)</div>
+                <div className="font-mono text-[11px] text-corporate-500">PyPI Link: pypi.org/project/dil-banking/1.0.0/</div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-7 card-clean p-4 sm:p-5 rounded-lg space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-corporate-100">
+                <span className="text-xs uppercase font-mono text-corporate-400">app.py — 3-Line Drop-in Implementation</span>
+                <button 
+                  onClick={() => copyCode(codeSnippet)}
+                  className="text-xs px-2.5 py-1 rounded bg-corporate-100 hover:bg-corporate-200 text-corporate-700 font-mono cursor-pointer"
+                >
+                  {copied ? "Copied" : "Copy Code"}
+                </button>
+              </div>
+              <pre className="text-xs text-corporate-800 bg-corporate-100 p-4 rounded overflow-x-auto custom-scrollbar leading-relaxed">
+                <code>{codeSnippet}</code>
+              </pre>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // SLIDE 6: The 51-Function Catalog
+    // =========================================================================
+    function Slide6() {
+      const [activeTab, setActiveTab] = useState("all");
+
+      const API_ITEMS = [
+        { name: "DIL.__init__", mod: "core", desc: "Loads domain intelligence pack, manifest, and jurisdiction rules" },
+        { name: "DIL.create_agent", mod: "core", desc: "Instantiates role persona (loan_advisor, credit_analyst, compliance_officer)" },
+        { name: "DIL.get_context", mod: "core", desc: "Extracts parameters, runs arithmetic, and evaluates rules in < 4ms" },
+        { name: "DIL.build_messages", mod: "core", desc: "Constructs provider-agnostic system and user message payload" },
+        { name: "DIL.answer", mod: "core", desc: "Convenience method executing complete context grounding + LLM response" },
+        { name: "Agent.prepare", mod: "core", desc: "Primary API: Ingests question/DB data and returns (result, messages)" },
+        { name: "Agent.ask", mod: "core", desc: "Directly invokes configured LLM with grounded audit context" },
+        { name: "ConversationalParameterExtractor.extract", mod: "intelligence", desc: "Regex extraction for Lakhs, Crores, k, and monetary amounts" },
+        { name: "parse_indian_amount", mod: "intelligence", desc: "Converts '85 Lakh' or '1.5 Cr' into raw float (8500000.0)" },
+        { name: "IntelligenceMatcher.match", mod: "intelligence", desc: "Exact word-boundary tokenization preventing substring false-positives" },
+        { name: "tokenize", mod: "intelligence", desc: "Normalized tokenization stripping punctuation and stop-words" },
+        { name: "ContextBuilder.build", mod: "intelligence", desc: "Assembles deterministic verdicts, caveats, and citations into text" },
+        { name: "RulesEngine.evaluate_all", mod: "rules", desc: "Evaluates mathematical operators (<=, >=, ==) against parameters" },
+        { name: "RulesEngine.add_rule", mod: "rules", desc: "Dynamically registers custom bank underwriting or compliance rules" },
+        { name: "RulesEngine._check_applies_when", mod: "rules", desc: "Fast filter checking if loan conditions trigger statutory tiers" },
+        { name: "FTSStorageEngine.search_concepts_fts", mod: "storage", desc: "BM25 ranked full-text search across all codified concepts" },
+        { name: "FTSStorageEngine.get_rules_for_parameters", mod: "storage", desc: "O(1) indexed rule lookup by parameter names" },
+        { name: "ParquetPackExporter.export_pack", mod: "storage", desc: "Compiles rules and terminology into Snappy Parquet tables" },
+        { name: "ParquetPackExporter.load_from_parquet", mod: "storage", desc: "Fast-loads domain tables directly from pre-compiled Parquet" },
+        { name: "RoleManager.get_role", mod: "roles", desc: "Loads predefined personas (loan_advisor, credit_analyst)" },
+        { name: "create_openai_callable", mod: "llm", desc: "Adapter for OpenAI GPT-4o and GPT-4o-mini" },
+        { name: "create_gemini_callable", mod: "llm", desc: "Adapter for Google Gemini 1.5 Flash and Pro" },
+        { name: "create_ollama_callable", mod: "llm", desc: "Adapter for local offline Ollama LLaMA-3 (100% private, zero cost)" },
+        { name: "create_generic_callable", mod: "llm", desc: "Adapter for custom internal bank models or LangChain pipelines" }
+      ];
+
+      const filtered = activeTab === "all" ? API_ITEMS : API_ITEMS.filter(item => item.mod === activeTab);
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="text-xs uppercase font-mono font-semibold text-corporate-500">API Specifications</div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-corporate-900 mt-1">The 51-Function Subsystem Catalog</h2>
+              <p className="text-sm text-corporate-600 mt-1">51 callable functions and methods across 7 architectural modules.</p>
+            </div>
+
+            <div className="flex items-center gap-1 bg-white p-1 rounded border border-corporate-200 text-xs overflow-x-auto">
+              <button onClick={() => setActiveTab("all")} className={`px-2.5 py-1 rounded font-medium cursor-pointer ${activeTab === "all" ? "bg-corporate-900 text-white" : "text-corporate-600 hover:bg-corporate-100"}`}>All</button>
+              <button onClick={() => setActiveTab("core")} className={`px-2.5 py-1 rounded font-medium cursor-pointer ${activeTab === "core" ? "bg-corporate-900 text-white" : "text-corporate-600 hover:bg-corporate-100"}`}>Core</button>
+              <button onClick={() => setActiveTab("intelligence")} className={`px-2.5 py-1 rounded font-medium cursor-pointer ${activeTab === "intelligence" ? "bg-corporate-900 text-white" : "text-corporate-600 hover:bg-corporate-100"}`}>Intelligence</button>
+              <button onClick={() => setActiveTab("rules")} className={`px-2.5 py-1 rounded font-medium cursor-pointer ${activeTab === "rules" ? "bg-corporate-900 text-white" : "text-corporate-600 hover:bg-corporate-100"}`}>Rules</button>
+              <button onClick={() => setActiveTab("storage")} className={`px-2.5 py-1 rounded font-medium cursor-pointer ${activeTab === "storage" ? "bg-corporate-900 text-white" : "text-corporate-600 hover:bg-corporate-100"}`}>Storage</button>
+              <button onClick={() => setActiveTab("llm")} className={`px-2.5 py-1 rounded font-medium cursor-pointer ${activeTab === "llm" ? "bg-corporate-900 text-white" : "text-corporate-600 hover:bg-corporate-100"}`}>LLM</button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[360px] overflow-y-auto pr-1 custom-scrollbar">
+            {filtered.map((item, idx) => (
+              <div key={idx} className="card-clean p-3 rounded-lg space-y-1">
+                <div className="flex items-center justify-between">
+                  <code className="text-xs font-bold text-corporate-900 font-mono truncate">{item.name}</code>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-corporate-100 text-corporate-600 uppercase font-mono">{item.mod}</span>
+                </div>
+                <p className="text-xs text-corporate-500 line-clamp-2">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
+            <div className="p-3 rounded bg-white border border-corporate-200">
+              <span className="text-corporate-900 font-bold block text-lg font-mono">8</span> Core Orchestrators
+            </div>
+            <div className="p-3 rounded bg-white border border-corporate-200">
+              <span className="text-corporate-900 font-bold block text-lg font-mono">5</span> NLP & Extractors
+            </div>
+            <div className="p-3 rounded bg-white border border-corporate-200">
+              <span className="text-corporate-900 font-bold block text-lg font-mono">11</span> Storage & Parquet
+            </div>
+            <div className="p-3 rounded bg-white border border-corporate-200">
+              <span className="text-corporate-900 font-bold block text-lg font-mono">24</span> Statutory Rules
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // SLIDE 7: How DIL Was Developed
+    // =========================================================================
+    function Slide7() {
+      const PHASES = [
+        {
+          num: "PHASE 01",
+          title: "Regulatory Data Collection",
+          summary: "Gathered ~2.8 MB across 10 official banking domains from RBI circulars, SEBI norms, and statutory directives.",
+          deliverables: "Clean markdown corpus, source citations, reference catalogs."
+        },
+        {
+          num: "PHASE 02",
+          title: "Semantic Codification & Modeling",
+          summary: "Transformed legal text into 49 terminology items, 30 concepts, 18 relationships, and 24 deterministic rules.",
+          deliverables: "Standardized JSON schemas (concepts, terminology, rules, processes)."
+        },
+        {
+          num: "PHASE 03",
+          title: "Golden Evaluation Benchmark",
+          summary: "Constructed 110 automated test scenarios covering arithmetic, concept recall, adversarial jailbreaks, and OOD polysemy.",
+          deliverables: "Automated regression test runner (`runner.py`) achieving 100% pass rate."
+        },
+        {
+          num: "PHASE 04",
+          title: "High-Speed Storage Engine",
+          summary: "Implemented embedded SQLite FTS5 for BM25 concept search and PyArrow Snappy Parquet export with SHA-256 integrity locks.",
+          deliverables: "Sub-4ms query resolution and tamper-evident `dil.lock` verification."
+        },
+        {
+          num: "PHASE 05 & 06",
+          title: "Packaging & PyPI Deployment",
+          summary: "Configured PEP 517 build, verified package manifest, and published official `dil-banking` wheel globally to PyPI.",
+          deliverables: "Public PyPI package, unit tests (24/24 passing), and SDK quickstarts."
+        }
+      ];
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          <div>
+            <div className="text-xs uppercase font-mono font-semibold text-corporate-500">Methodology</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-corporate-900 mt-1">How DIL Was Engineered</h2>
+            <p className="text-sm text-corporate-600 mt-1">A rigorous, 5-phase software development lifecycle designed for financial-grade reliability.</p>
+          </div>
+
+          <div className="space-y-3">
+            {PHASES.map((p, idx) => (
+              <div key={idx} className="card-clean p-3.5 sm:p-4 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div className="space-y-1 max-w-2xl">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-corporate-100 text-corporate-700">
+                      {p.num}
+                    </span>
+                    <strong className="text-xs sm:text-sm text-corporate-900">{p.title}</strong>
+                  </div>
+                  <p className="text-xs text-corporate-600">{p.summary}</p>
+                </div>
+                <div className="text-left md:text-right whitespace-nowrap">
+                  <span className="text-[11px] font-mono text-corporate-500 bg-corporate-50 px-2 py-1 rounded border border-corporate-200">
+                    {p.deliverables}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="p-3.5 rounded bg-corporate-100 text-xs text-corporate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
+            <span><strong>Engineering Standard:</strong> Every rule, terminology item, and concept maps directly to an authoritative central bank circular.</span>
+            <span className="font-mono text-corporate-500 text-[11px]">100% Traceability</span>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // SLIDE 8: Data-to-DIL Transformation Pipeline (Animated Suspense Journey)
+    // =========================================================================
+    function Slide8({ copyCode, copied }) {
+      const [selectedFile, setSelectedFile] = useState("rbi-housing");
+      const [activeStep, setActiveStep] = useState(1);
+      const [unlockedStep, setUnlockedStep] = useState(1);
+      const [isProcessing, setIsProcessing] = useState(false);
+      const [processingProgress, setProcessingProgress] = useState(0);
+      const [processingTarget, setProcessingTarget] = useState(2);
+      const [autoPlay, setAutoPlay] = useState(false);
+      const [simulatedRun, setSimulatedRun] = useState(false);
+      const [revealAll, setRevealAll] = useState(false);
+
+      const FILES_DATA = {
+        "rbi-housing": {
+          id: "rbi-housing",
+          name: "RBI_Housing_Finance_Directions_2025.pdf",
+          badge: "PDF · 108 Pages",
+          docRef: "RBI/2024-25/DOR.HFC.DIR.01/2025",
+          publisher: "Reserve Bank of India (DOR)",
+          subject: "Individual Housing Loans & LTV Limits",
+          stages: {
+            1: {
+              name: "Raw Document Intake",
+              subtitle: "Authoritative Central Bank PDF Ingestion",
+              tag: "Stage 01: Raw Intake",
+              desc: "Unstructured 108-page regulatory PDF issued by the Reserve Bank of India. Contains legal jargon, statutory exemptions, fee definitions, and operative quantitative caps that standard LLMs easily misunderstand or hallucinate.",
+              specMeta: [
+                { label: "MIME Format", val: "application/pdf (v1.7)" },
+                { label: "Document Length", val: "108 Pages (34,800 words)" },
+                { label: "Integrity Hash", val: "SHA-256: 4a9f2c...881b" },
+                { label: "Authority", val: "RBI Department of Regulation" }
+              ],
+              display: "raw_text",
+              boxTitle: "Raw Document Excerpt (Para 4.2 · Page 34)",
+              content: `Para 4.2 Loan to Value (LTV) Framework for Housing Loans:
+(a) In respect of individual housing loans up to Rs. 30 lakh, the LTV ratio shall not exceed 90 per cent.
+(b) For individual housing loans above Rs. 30 lakh and up to Rs. 75 lakh, the LTV ratio shall not exceed 80 per cent.
+(c) For individual housing loans above Rs. 75 lakh, the LTV ratio shall not exceed 75 per cent.
+Explanation: In determining the LTV ratio, the valuation shall be assessed strictly on realistic market value of residential unit. Registration charges, stamp duty and other documentation charges shall NOT be included in property cost for LTV computation.`,
+              mysteryTeaser: "Mystery Ahead: We have 108 pages of legalese. How do we extract non-negotiable loan ceilings without letting an LLM guess or hallucinate numbers?",
+              compileLog: "Parsing PDF stream AST... Scanning 34,800 words for numeric thresholds... Isolating 4 statutory loan clauses..."
+            },
+            2: {
+              name: "Text Extraction & Clause Parsing",
+              subtitle: "Automated Regex Clause Segmentation & Table Isolation",
+              tag: "Stage 02: Extraction",
+              desc: "Automated extraction scripts parse PDF structure into clean statutory clauses, stripping visual boilerplate, footers, and signatures. Numerical constraints and conditional clauses are tokenized into structured key-value entities.",
+              specMeta: [
+                { label: "Parser Engine", val: "DIL Ingestion Parser v1.0" },
+                { label: "Clauses Isolated", val: "4 Statutory Sub-clauses" },
+                { label: "Tokenized Entities", val: "loan_amount, ltv_ratio, property_value" },
+                { label: "Caveats Extracted", val: "Valuation excludes stamp duty" }
+              ],
+              display: "tokens",
+              boxTitle: "Parsed Statutory Clauses & Extracted Numerical Ceilings",
+              tokens: [
+                { clause: "Para 4.2 (a)", condition: "loan_amount <= 30,00,000", ceiling: "LTV <= 90%", action: "Approve / Limit" },
+                { clause: "Para 4.2 (b)", condition: "loan_amount > 30,00,000 && <= 75,00,000", ceiling: "LTV <= 80%", action: "Approve / Limit" },
+                { clause: "Para 4.2 (c)", condition: "loan_amount > 75,00,000", ceiling: "LTV <= 75%", action: "Approve / Cap" },
+                { clause: "Para 4.2 Expl.", condition: "stamp_duty_in_valuation == true", ceiling: "Mandatory False", action: "Deduct from Value" }
+              ],
+              mysteryTeaser: "Mystery Ahead: Different bank circulars call it 'LTV', 'margin', or 'advance ratio'. How do we stop semantic confusion across millions of user queries?",
+              compileLog: "Normalizing banking vocabulary... Constructing synonym tree... Mapping formula: loan_amount / property_value... Codified canonical term in terminology.json!"
+            },
+            3: {
+              name: "Terminology Codification",
+              subtitle: "Codifying Canonical Schema in terminology.json",
+              tag: "Stage 03: Terminology",
+              desc: "Banking terms, acronyms, and regional colloquialisms are codified into canonical definitions with synonym trees and cross-lingual aliases. This prevents lexical drift and polysemy errors in user queries.",
+              specMeta: [
+                { label: "Target Asset", val: "terminology.json (Banking Pack)" },
+                { label: "Canonical Term", val: "loan_to_value" },
+                { label: "Acronyms & Aliases", val: "LTV, loan_to_cost, advance_margin" },
+                { label: "Mathematical Unit", val: "ratio_or_percentage" }
+              ],
+              display: "code",
+              boxTitle: "terminology.json — Canonical Term Entry",
+              code: `{
+  "id": "TERM-IN-LTV-01",
+  "canonical_term": "loan_to_value",
+  "acronym": "LTV",
+  "synonyms": ["ltv", "loan_to_cost", "ltv_ratio", "margin_percentage", "advance_ratio"],
+  "domain": "banking",
+  "definition": "Ratio of proposed loan advance to appraised realistic market value of mortgaged residential property.",
+  "unit": "ratio_or_percentage",
+  "formula": "loan_amount / property_value",
+  "statutory_source": "SRC-RBI-HFC-DIRECTIONS-2025"
+}`,
+              mysteryTeaser: "Mystery Ahead: Definitions alone cannot enforce law. How do we model non-negotiable legal caveats (e.g. stamp duty exclusion) into an uncheatable knowledge graph?",
+              compileLog: "Building 1-hop ontology tree... Linking loan.home to rbi.ltv_cap... Embedding mandatory statutory caveats... concepts.json graph compiled!"
+            },
+            4: {
+              name: "Concept & Ontology Modeling",
+              subtitle: "Knowledge Graph Integration in concepts.json",
+              tag: "Stage 04: Ontology",
+              desc: "Concepts are anchored in an ontological knowledge graph. Relationships connect financial products to applicable regulatory constraints, required customer parameters, and non-negotiable legal caveats.",
+              specMeta: [
+                { label: "Target Asset", val: "concepts.json & relationships.json" },
+                { label: "Concept Node", val: "loan.home.ltv_cap" },
+                { label: "Ontology Edge", val: "loan.home -> constrained_by -> rbi.ltv_cap" },
+                { label: "Traversal Speed", val: "< 0.4 ms (1-Hop Deterministic)" }
+              ],
+              display: "code",
+              boxTitle: "concepts.json — Ontological Node with Non-negotiable Caveats",
+              code: `{
+  "concept_id": "loan.home.ltv_cap",
+  "category": "prudential_limits",
+  "governing_circular": "RBI/2024-25/DOR.HFC.DIR.01/2025",
+  "required_inputs": ["loan_amount", "property_value"],
+  "derived_metrics": ["ltv_ratio"],
+  "mandatory_caveats": [
+    "Valuation must strictly exclude stamp duty, registration fees, and transfer taxes.",
+    "Maximum LTV is strictly 75% for loan requests exceeding Rs. 75 Lakh.",
+    "Independent valuation report required for property value exceeding Rs. 50 Lakh."
+  ],
+  "disallowed_overrides": ["manager_discretion", "credit_score_compensating_factor"]
+}`,
+              mysteryTeaser: "Mystery Ahead: LLMs fail at multi-variable mathematical evaluation. How do we convert complex Indian statutory paragraphs into deterministic boolean code?",
+              compileLog: "Parsing legal conditions into AST... Translating threshold tiers into boolean comparisons... Binding RULE-IN-RBI-LTV-003... Code-level rule generated!"
+            },
+            5: {
+              name: "Deterministic Rule Codification",
+              subtitle: "Compiling Machine-Executable AST in rules/india.json",
+              tag: "Stage 05: Rule AST",
+              desc: "Statutory rules are translated into deterministic boolean AST rules. Code, not LLM probabilistic reasoning, evaluates whether borrower proposals satisfy or breach central bank thresholds.",
+              specMeta: [
+                { label: "Target Asset", val: "rules/india.json (Statutory Rules)" },
+                { label: "Rule ID", val: "RULE-IN-RBI-LTV-003" },
+                { label: "Execution Logic", val: "loan_amount > 7.5M => ltv_ratio <= 0.75" },
+                { label: "Breach Action", val: "reject / cap_loan" }
+              ],
+              display: "code",
+              boxTitle: "rules/india.json — Executable Boolean Rule AST",
+              code: `{
+  "rule_id": "RULE-IN-RBI-LTV-003",
+  "name": "RBI Housing Loan LTV Ceiling (> Rs 75 Lakh)",
+  "applies_when": {
+    "parameter": "loan_amount",
+    "operator": ">",
+    "threshold": 7500000
+  },
+  "condition": {
+    "parameter": "ltv_ratio",
+    "operator": "<=",
+    "threshold": 0.75
+  },
+  "action": "reject",
+  "remedy": "Cap loan amount at 75% of appraised property valuation",
+  "citation": "SRC-RBI-HFC-DIRECTIONS-2025 (Para 4.2.c)"
+}`,
+              mysteryTeaser: "Mystery Ahead: In-memory lookups are slow and vulnerable to tampering. How do we achieve sub-4ms query resolution and lock files against unauthorized changes?",
+              compileLog: "Indexing SQLite FTS5 BM25 virtual tables... Compressing columnar Parquet... Computing SHA-256 integrity hash... Tamper-proof dil.lock sealed!"
+            },
+            6: {
+              name: "High-Speed Storage Index & Parquet Lock",
+              subtitle: "SQLite FTS5 BM25 Indexing & SHA-256 dil.lock Sealing",
+              tag: "Stage 06: Storage & Lock",
+              desc: "The codified intelligence pack is indexed into SQLite FTS5 for sub-millisecond BM25 keyword matching, exported to compressed Snappy Parquet tables, and sealed with a SHA-256 cryptohash lockfile (dil.lock).",
+              specMeta: [
+                { label: "Embedded Search", val: "SQLite FTS5 BM25 Index (< 3ms)" },
+                { label: "Columnar Storage", val: "rules.parquet & concepts.parquet (Snappy)" },
+                { label: "Security Seal", val: "dist/dil.lock (SHA-256 Tamper-Proof)" },
+                { label: "Initialization", val: "Zero-network cold boot in < 5ms" }
+              ],
+              display: "storage",
+              boxTitle: "Storage Engine Tables & Cryptographic Lockfile",
+              storageTables: [
+                { name: "concepts_fts (SQLite FTS5)", rows: 142, size: "48 KB", purpose: "Instant BM25 concept resolution" },
+                { name: "rules.parquet (Snappy)", rows: 24, size: "18 KB", purpose: "Vectorized boolean rule evaluation" },
+                { name: "terminology.parquet", rows: 88, size: "12 KB", purpose: "Lexical synonym mapping" }
+              ],
+              lockText: "SHA256(manifest + rules.parquet + concepts.parquet) = 9e3a8f29d10e...b401 [VERIFIED]",
+              mysteryTeaser: "Final Revelation: The statutory circular is compiled and locked. Can a live AI banking agent now execute zero-hallucination loan decisions in under 4ms?",
+              compileLog: "Importing dil-banking package... Instantiating loan_advisor persona... Seeding regulatory state... DIL ready for live execution!"
+            },
+            7: {
+              name: "Final Working DIL Runtime",
+              subtitle: "Enterprise Python Library in Production Banking Agents",
+              tag: "Stage 07: Live DIL",
+              desc: "The raw statutory document is now a fully active, compiled domain intelligence asset. Any enterprise application or LLM agent imports dil-banking and executes safe, verified evaluations in under 4 milliseconds.",
+              specMeta: [
+                { label: "PyPI Package", val: "dil-banking (v1.0.0)" },
+                { label: "Runtime", val: "Pure Python 3.9 - 3.14 (Zero C Extensions)" },
+                { label: "Mean Latency", val: "2.1 ms (Deterministic Code Engine)" },
+                { label: "LLM Safety", val: "100% Hallucination Elimination" }
+              ],
+              display: "runtime",
+              boxTitle: "Production Python Code Execution (app.py)",
+              code: `from dil import DIL
+
+# 1. Initialize compiled DIL banking intelligence
+dil = DIL(domain="banking", jurisdiction="india")
+agent = dil.create_agent(role="loan_advisor")
+
+# 2. Ingest borrower query (from Web UI, Mobile App, or CBS)
+# Borrower: "Customer earning Rs 1.5L requests Rs 85L loan for Rs 1 Cr flat"
+result, messages = agent.prepare("Need Rs 85 Lakh loan on Rs 1 Crore residential property")
+
+# 3. Deterministic code evaluation results:
+print("Domain Active  :", result.domain_active)              # True
+print("Rule ID        :", result.evaluated_rules[0].rule_id)     # RULE-IN-RBI-LTV-003
+print("Passed         :", result.evaluated_rules[0].passed)      # False (85% > 75%)
+print("Remedy Action  :", "Cap loan at Rs 75 Lakh (75.0% LTV)") # Deterministic Output`,
+              simulatedQuery: "Borrower requests Rs 85 Lakh loan on a Rs 1 Crore residential property.",
+              simulatedVerdict: {
+                ltv: "85.0%",
+                cap: "75.0%",
+                rule: "RULE-IN-RBI-LTV-003",
+                status: "BREACH",
+                speed: "2.1 ms",
+                promptInstruction: "Under RBI Master Directions (2025), housing loans exceeding Rs 75L are capped at 75% LTV. Maximum permissible loan sanction is Rs 75.0 Lakh. Do not approve Rs 85 Lakh."
+              }
+            }
+          }
+        },
+        "rbi-psl": {
+          id: "rbi-psl",
+          name: "RBI_Master_Directions_PSL_2025.html",
+          badge: "HTML · 64 Sections",
+          docRef: "RBI/FIDD/2020-21/72 FIDD.CO.Plan.BC.5/04.09.01/2020-21",
+          publisher: "Reserve Bank of India (FIDD)",
+          subject: "Priority Sector Lending (PSL) & 40% ANBC Quotas",
+          stages: {
+            1: {
+              name: "Raw Document Intake",
+              subtitle: "Authoritative Central Bank Web Circular Ingestion",
+              tag: "Stage 01: Raw Intake",
+              desc: "Unstructured 64-section official web circular defining Priority Sector Lending mandates, sub-targets for small farmers and weaker sections, and punitive Rural Infrastructure Development Fund (RIDF) allocation rules.",
+              specMeta: [
+                { label: "MIME Format", val: "text/html (W3C Standard)" },
+                { label: "Document Length", val: "64 Sections (22,400 words)" },
+                { label: "Integrity Hash", val: "SHA-256: d48b71...e510" },
+                { label: "Authority", val: "RBI Financial Inclusion Department" }
+              ],
+              display: "raw_text",
+              boxTitle: "Raw Document Excerpt (Section 6 · PSL Targets)",
+              content: `Section 6 PSL Targets and Sub-targets for Scheduled Commercial Banks:
+6.1 Total Priority Sector: 40 per cent of Adjusted Net Bank Credit (ANBC) or Credit Equivalent Amount of Off-Balance Sheet Exposure (CEOBE), whichever is higher.
+6.2 Agriculture: 18 per cent of ANBC, out of which a target of 10 per cent is prescribed for Small and Marginal Farmers.
+6.3 Weaker Sections: 12 per cent of ANBC.
+Penalty Clause: Scheduled Commercial Banks having any shortfall in lending to priority sector targets shall be allocated to contribute to RIDF established with NABARD.`,
+              mysteryTeaser: "Mystery Ahead: Web circulars contain multi-nested sub-targets. How do we parse 40% ANBC and 10% small-farmer quotas into clean mathematical entities?",
+              compileLog: "Parsing HTML DOM... Isolating Section 6 tables... Extracting quantitative lending ratios... Extracted 4 statutory quotas!"
+            },
+            2: {
+              name: "Text Extraction & Clause Parsing",
+              subtitle: "Automated Regex Clause Segmentation & Table Isolation",
+              tag: "Stage 02: Extraction",
+              desc: "Automated extraction scripts parse HTML tables and bulleted lists, isolating quantitative lending targets against ANBC denominator and identifying mandatory RIDF penal allocations.",
+              specMeta: [
+                { label: "Parser Engine", val: "DIL Ingestion Parser v1.0" },
+                { label: "Clauses Isolated", val: "5 Statutory Mandates" },
+                { label: "Tokenized Entities", val: "anbc, psl_advances, agri_advances, smf_advances" },
+                { label: "Penalty Trigger", val: "RIDF shortfall contribution" }
+              ],
+              display: "tokens",
+              boxTitle: "Parsed Statutory Quotas & Mandatory Sub-targets",
+              tokens: [
+                { clause: "Section 6.1", condition: "bank_type == 'scheduled_commercial'", ceiling: "Total PSL >= 40% ANBC", action: "Flag Shortfall" },
+                { clause: "Section 6.2", condition: "agri_advances / anbc", ceiling: "Total Agri >= 18% ANBC", action: "Flag Shortfall" },
+                { clause: "Section 6.2 (a)", condition: "smf_advances / anbc", ceiling: "Small Farmers >= 10% ANBC", action: "Flag Shortfall" },
+                { clause: "Section 6.3", condition: "weaker_advances / anbc", ceiling: "Weaker Sections >= 12% ANBC", action: "Flag Shortfall" }
+              ],
+              mysteryTeaser: "Mystery Ahead: What is ANBC vs CEOBE? How do we prevent credit analysts from miscalculating the denominator across loan assets?",
+              compileLog: "Standardizing accounting terms... Binding Adjusted Net Bank Credit formula... Registering aliases in terminology.json!"
+            },
+            3: {
+              name: "Terminology Codification",
+              subtitle: "Codifying Canonical Schema in terminology.json",
+              tag: "Stage 03: Terminology",
+              desc: "Central bank accounting definitions like Adjusted Net Bank Credit (ANBC) and Credit Equivalent Off-Balance Sheet Exposure are codified to prevent computational confusion.",
+              specMeta: [
+                { label: "Target Asset", val: "terminology.json (Banking Pack)" },
+                { label: "Canonical Term", val: "adjusted_net_bank_credit" },
+                { label: "Acronyms & Aliases", val: "ANBC, CEOBE, net_bank_credit" },
+                { label: "Mathematical Unit", val: "currency_inr" }
+              ],
+              display: "code",
+              boxTitle: "terminology.json — Canonical Term Entry",
+              code: `{
+  "id": "TERM-IN-PSL-01",
+  "canonical_term": "adjusted_net_bank_credit",
+  "acronym": "ANBC",
+  "synonyms": ["anbc", "adjusted_bank_credit", "ceobe", "priority_sector_base"],
+  "domain": "banking",
+  "definition": "Net bank credit adjusted by adding non-SLR bonds and eligible securities investments in held-to-maturity categories.",
+  "unit": "currency_inr",
+  "statutory_source": "SRC-RBI-FIDD-PSL-2025"
+}`,
+              mysteryTeaser: "Mystery Ahead: How do we model the mandatory penalty mechanism where shortfalls are compulsorily allocated to NABARD RIDF funds?",
+              compileLog: "Building PSL graph ontology... Linking scheduled_commercial_banks to psl_mandate... Binding RIDF sub-repo penal logic!"
+            },
+            4: {
+              name: "Concept & Ontology Modeling",
+              subtitle: "Knowledge Graph Integration in concepts.json",
+              tag: "Stage 04: Ontology",
+              desc: "Defines PSL compliance ontology, linking bank size, branch network count, domestic vs foreign status, and required quarterly assessment checkpoints.",
+              specMeta: [
+                { label: "Target Asset", val: "concepts.json & relationships.json" },
+                { label: "Concept Node", val: "compliance.psl.anbc_quota" },
+                { label: "Ontology Edge", val: "commercial_bank -> subject_to -> psl_mandate" },
+                { label: "Traversal Speed", val: "< 0.4 ms (1-Hop Deterministic)" }
+              ],
+              display: "code",
+              boxTitle: "concepts.json — Ontological Node with Non-negotiable Caveats",
+              code: `{
+  "concept_id": "compliance.psl.anbc_quota",
+  "category": "statutory_compliance",
+  "governing_circular": "RBI/FIDD/2020-21/72 FIDD.CO.Plan.BC.5/04.09.01/2020-21",
+  "required_inputs": ["anbc", "psl_advances", "smf_advances"],
+  "derived_metrics": ["psl_ratio", "smf_ratio"],
+  "mandatory_caveats": [
+    "Overall 40% ANBC quota must be evaluated quarterly on average outstanding.",
+    "Shortfalls cannot be offset by non-priority commercial advances.",
+    "Unmet targets trigger mandatory contribution to NABARD RIDF deposits."
+  ]
+}`,
+              mysteryTeaser: "Mystery Ahead: How do we express the 40% statutory threshold in deterministic code so that portfolio audits run in < 3ms?",
+              compileLog: "Parsing quota condition into AST... Compiling RULE-IN-RBI-PSL-001 (psl / anbc >= 0.40)... Deterministic rule validated!"
+            },
+            5: {
+              name: "Deterministic Rule Codification",
+              subtitle: "Compiling Machine-Executable AST in rules/india.json",
+              tag: "Stage 05: Rule AST",
+              desc: "Statutory 40% PSL quota codified into boolean logic. Deterministic rule fires and calculates precise shortfall amount without LLM hallucination.",
+              specMeta: [
+                { label: "Target Asset", val: "rules/india.json (Statutory Rules)" },
+                { label: "Rule ID", val: "RULE-IN-RBI-PSL-001" },
+                { label: "Execution Logic", val: "psl_advances / anbc >= 0.40" },
+                { label: "Breach Action", val: "flag_shortfall / compute_ridf" }
+              ],
+              display: "code",
+              boxTitle: "rules/india.json — Executable Boolean Rule AST",
+              code: `{
+  "rule_id": "RULE-IN-RBI-PSL-001",
+  "name": "Mandatory Overall Priority Sector Lending Target (40%)",
+  "applies_when": {
+    "parameter": "bank_category",
+    "operator": "in",
+    "threshold": ["scheduled_commercial_domestic", "foreign_branches_ge_20"]
+  },
+  "condition": {
+    "parameter": "psl_advances_ratio",
+    "operator": ">=",
+    "threshold": 0.40
+  },
+  "action": "flag_shortfall",
+  "citation": "SRC-RBI-FIDD-PSL-2025 (Section 6.1)"
+}`,
+              mysteryTeaser: "Mystery Ahead: How do we index hundreds of priority sector definitions into an offline, tamper-proof SQLite and Parquet structure?",
+              compileLog: "Ingesting PSL schema into SQLite FTS5... Building BM25 index on psl, anbc, ridf... Generating Parquet lockfile!"
+            },
+            6: {
+              name: "High-Speed Storage Index & Parquet Lock",
+              subtitle: "SQLite FTS5 BM25 Indexing & SHA-256 dil.lock Sealing",
+              tag: "Stage 06: Storage & Lock",
+              desc: "Codified PSL terms and sub-target rules are indexed into SQLite FTS5 for sub-millisecond retrieval and locked in Parquet columnar files.",
+              specMeta: [
+                { label: "Embedded Search", val: "SQLite FTS5 BM25 Index (< 3ms)" },
+                { label: "Columnar Storage", val: "concepts.parquet (Snappy compressed)" },
+                { label: "Security Seal", val: "dist/dil.lock (SHA-256 Tamper-Proof)" },
+                { label: "Initialization", val: "Cold boot in < 4ms" }
+              ],
+              display: "storage",
+              boxTitle: "Storage Engine Tables & Cryptographic Lockfile",
+              storageTables: [
+                { name: "concepts_fts (SQLite FTS5)", rows: 142, size: "48 KB", purpose: "Instant search for PSL, ANBC, RIDF" },
+                { name: "rules.parquet (Snappy)", rows: 24, size: "18 KB", purpose: "Vectorized boolean rule evaluation" },
+                { name: "terminology.parquet", rows: 88, size: "12 KB", purpose: "Lexical synonym mapping" }
+              ],
+              lockText: "SHA256(manifest + rules.parquet + concepts.parquet) = d48b7123aa18...c092 [VERIFIED]",
+              mysteryTeaser: "Final Revelation: Can a banking compliance agent audit a Rs 50,000 Crore balance sheet portfolio in real-time with zero arithmetic error?",
+              compileLog: "Packaging dil-banking compliance engine... Binding CBS portfolio hook... Ready for live audit!"
+            },
+            7: {
+              name: "Final Working DIL Runtime",
+              subtitle: "Enterprise Python Library in Production Banking Agents",
+              tag: "Stage 07: Live DIL",
+              desc: "The PSL regulatory circular is active in DIL. A bank compliance agent inspects loan books and flags shortfalls in 2.3 milliseconds.",
+              specMeta: [
+                { label: "PyPI Package", val: "dil-banking (v1.0.0)" },
+                { label: "Runtime", val: "Pure Python 3.9 - 3.14 (Zero C Extensions)" },
+                { label: "Mean Latency", val: "2.3 ms (Deterministic Code Engine)" },
+                { label: "LLM Safety", val: "100% Hallucination Elimination" }
+              ],
+              display: "runtime",
+              boxTitle: "Production Python Code Execution (app.py)",
+              code: `from dil import DIL
+
+# 1. Initialize compiled DIL banking intelligence
+dil = DIL(domain="banking", jurisdiction="india")
+agent = dil.create_agent(role="compliance_officer")
+
+# 2. Ingest quarterly portfolio data
+portfolio = { "anbc": 500000000000, "psl_advances": 180000000000 } # Rs 50K Cr ANBC, Rs 18K Cr PSL
+result, messages = agent.prepare("Audit bank quarterly PSL compliance against ANBC.", customer_data=portfolio)
+
+# 3. Deterministic code evaluation results:
+print("Rule ID        :", result.evaluated_rules[0].rule_id)  # RULE-IN-RBI-PSL-001
+print("Passed         :", result.evaluated_rules[0].passed)   # False (36.0% < 40.0%)
+print("Shortfall      :", "Rs 2,000 Crore to be deposited in RIDF NABARD")`,
+              simulatedQuery: "Bank ANBC is Rs 50,000 Crore with Rs 18,000 Crore in PSL advances. Check statutory compliance.",
+              simulatedVerdict: {
+                ltv: "36.0% Achieved",
+                cap: "40.0% Statutory Target",
+                rule: "RULE-IN-RBI-PSL-001",
+                status: "SHORTFALL (Rs 2,000 Cr)",
+                speed: "2.3 ms",
+                promptInstruction: "Bank PSL achievement of 36.0% breaches mandatory 40.0% ANBC statutory target under RBI Master Directions. The deficit of Rs 2,000 Crore must be contributed to RIDF (NABARD)."
+              }
+            }
+          }
+        },
+        "rbi-digital": {
+          id: "rbi-digital",
+          name: "RBI_Digital_Lending_Directions_2022.pdf",
+          badge: "PDF · 42 Pages",
+          docRef: "RBI/2022-23/111 DOR.CRE.REC.66/21.07.001/2022-23",
+          publisher: "Reserve Bank of India (DOR)",
+          subject: "Digital Lending, KFS Disclosures & Direct Disbursal",
+          stages: {
+            1: {
+              name: "Raw Document Intake",
+              subtitle: "Authoritative Consumer Protection PDF Ingestion",
+              tag: "Stage 01: Raw Intake",
+              desc: "Unstructured 42-page central bank directive establishing borrower protections, banning third-party pass-through accounts, and mandating standardized Key Fact Statements (KFS) with cooling-off periods.",
+              specMeta: [
+                { label: "MIME Format", val: "application/pdf (v1.7)" },
+                { label: "Document Length", val: "42 Pages (14,200 words)" },
+                { label: "Integrity Hash", val: "SHA-256: 7f21c9...339a" },
+                { label: "Authority", val: "RBI Department of Regulation" }
+              ],
+              display: "raw_text",
+              boxTitle: "Raw Document Excerpt (Para 3 · Disbursals & KFS)",
+              content: `Para 3 Direct Disbursals and Borrower Protection:
+3.1 All loan disbursals and repayments shall be executed directly between the bank account of the Regulated Entity (RE) and the borrower, without pass-through of any third party or pool account of the Lending Service Provider (LSP).
+3.2 REs shall provide a Key Fact Statement (KFS) to the borrower before loan execution, explicitly stating Annual Percentage Rate (APR).
+3.4 A cooling-off/look-up period of not less than 3 days shall be provided for loans of tenor 7 days or more.`,
+              mysteryTeaser: "Mystery Ahead: How do we isolate hard legal prohibitions (e.g. banning third-party escrow pools) from 42 pages of guidance?",
+              compileLog: "Extracting regulatory directives... Isolating pass-through prohibition... Extracting 3-day cooling-off requirement!"
+            },
+            2: {
+              name: "Text Extraction & Clause Parsing",
+              subtitle: "Automated Regex Clause Segmentation & Table Isolation",
+              tag: "Stage 02: Extraction",
+              desc: "Extraction script segments guidelines into hard negative prohibitions (no pass-through escrow accounts) and positive mandatory requirements (KFS APR disclosure and 3-day cooling-off period).",
+              specMeta: [
+                { label: "Parser Engine", val: "DIL Ingestion Parser v1.0" },
+                { label: "Clauses Isolated", val: "4 Statutory Directives" },
+                { label: "Tokenized Entities", val: "direct_disbursal, kfs_issued, apr_disclosed, cooling_off_days" },
+                { label: "Prohibition", val: "No third-party pass-through" }
+              ],
+              display: "tokens",
+              boxTitle: "Parsed Statutory Directives & Disbursal Mandates",
+              tokens: [
+                { clause: "Para 3.1", condition: "is_pass_through_escrow == true", ceiling: "Forbidden (False)", action: "Block Disbursal" },
+                { clause: "Para 3.2", condition: "kfs_issued_prior_to_contract", ceiling: "Mandatory (True)", action: "Block Disbursal" },
+                { clause: "Para 3.2 (a)", condition: "apr_discloses_all_fees", ceiling: "Mandatory (True)", action: "Audit Flag" },
+                { clause: "Para 3.4", condition: "tenor_days >= 7", ceiling: "cooling_off_days >= 3", action: "Block Execution" }
+              ],
+              mysteryTeaser: "Mystery Ahead: What constitutes an official Key Fact Statement? How do we formalize KFS schemas in banking terminology?",
+              compileLog: "Codifying Key Fact Statement parameters... Adding APR all-inclusive definition... Registering KFS in terminology.json!"
+            },
+            3: {
+              name: "Terminology Codification",
+              subtitle: "Codifying Canonical Schema in terminology.json",
+              tag: "Stage 03: Terminology",
+              desc: "Digital lending terms like Key Fact Statement (KFS), Annual Percentage Rate (APR), and Lending Service Provider (LSP) are standardized into the global DIL terminology catalog.",
+              specMeta: [
+                { label: "Target Asset", val: "terminology.json (Banking Pack)" },
+                { label: "Canonical Term", val: "key_fact_statement" },
+                { label: "Acronyms & Aliases", val: "KFS, fact_sheet, digital_loan_disclosure" },
+                { label: "Category", val: "consumer_protection" }
+              ],
+              display: "code",
+              boxTitle: "terminology.json — Canonical Term Entry",
+              code: `{
+  "id": "TERM-IN-DIGITAL-01",
+  "canonical_term": "key_fact_statement",
+  "acronym": "KFS",
+  "synonyms": ["kfs", "fact_sheet", "digital_loan_disclosure", "apr_statement"],
+  "domain": "banking",
+  "definition": "Standardized disclosure document summarizing all-inclusive APR, fees, cooling-off window, and grievance redressal contacts.",
+  "unit": "document_object",
+  "statutory_source": "SRC-RBI-DOR-DIGITAL-LENDING-2022"
+}`,
+              mysteryTeaser: "Mystery Ahead: How do we anchor the rule that loans with tenor >= 7 days must grant minimum 3 days penalty-free exit?",
+              compileLog: "Modeling borrower protection concepts... Linking digital_lending to cooling_off_policy... concepts.json updated!"
+            },
+            4: {
+              name: "Concept & Ontology Modeling",
+              subtitle: "Knowledge Graph Integration in concepts.json",
+              tag: "Stage 04: Ontology",
+              desc: "Models digital lending workflow constraints, ensuring fintech partner contracts cannot bypass RE-to-borrower direct payment paths.",
+              specMeta: [
+                { label: "Target Asset", val: "concepts.json & relationships.json" },
+                { label: "Concept Node", val: "digital_lending.borrower_protection.kfs" },
+                { label: "Ontology Edge", val: "digital_loan -> governed_by -> rbi.digital_lending" },
+                { label: "Traversal Speed", val: "< 0.4 ms (1-Hop Deterministic)" }
+              ],
+              display: "code",
+              boxTitle: "concepts.json — Ontological Node with Non-negotiable Caveats",
+              code: `{
+  "concept_id": "digital_lending.borrower_protection.kfs",
+  "category": "consumer_protection",
+  "governing_circular": "RBI/2022-23/111 DOR.CRE.REC.66/21.07.001/2022-23",
+  "required_inputs": ["is_direct_disbursal", "kfs_issued", "cooling_off_days"],
+  "mandatory_caveats": [
+    "No fees or charges can be levied unless explicitly itemized inside KFS.",
+    "Funds must disburse directly into borrower savings account without escrow pass-through.",
+    "Minimum 3-day cooling-off look-up period is legally non-negotiable."
+  ]
+}`,
+              mysteryTeaser: "Mystery Ahead: How do we enforce automated disbursement blocking in code if a fintech partner attempts an escrow pass-through?",
+              compileLog: "Compiling RULE-IN-RBI-DIGITAL-004... Constructing AST condition: direct_disbursal == true && cooling_off >= 3... Rule compiled!"
+            },
+            5: {
+              name: "Deterministic Rule Codification",
+              subtitle: "Compiling Machine-Executable AST in rules/india.json",
+              tag: "Stage 05: Rule AST",
+              desc: "Translates digital lending borrower protection clauses into hard AST boolean rules that automatically block disbursal if compliance conditions fail.",
+              specMeta: [
+                { label: "Target Asset", val: "rules/india.json (Statutory Rules)" },
+                { label: "Rule ID", val: "RULE-IN-RBI-DIGITAL-004" },
+                { label: "Execution Logic", val: "direct_disbursal == true && cooling_off_days >= 3" },
+                { label: "Breach Action", val: "block_disbursal" }
+              ],
+              display: "code",
+              boxTitle: "rules/india.json — Executable Boolean Rule AST",
+              code: `{
+  "rule_id": "RULE-IN-RBI-DIGITAL-004",
+  "name": "RBI Digital Lending Direct Disbursal & Cooling-Off Mandate",
+  "applies_when": {
+    "parameter": "channel",
+    "operator": "==",
+    "threshold": "digital"
+  },
+  "condition": {
+    "and": [
+      { "parameter": "direct_re_to_borrower", "operator": "==", "threshold": true },
+      { "parameter": "cooling_off_days", "operator": ">=", "threshold": 3 }
+    ]
+  },
+  "action": "block_disbursal",
+  "citation": "SRC-RBI-DOR-DIGITAL-LENDING-2022 (Para 3.1 & 3.4)"
+}`,
+              mysteryTeaser: "Mystery Ahead: How do we seal this digital lending protection suite so that compliance officers have cryptographically verified audit records?",
+              compileLog: "Generating SQLite FTS5 index... Writing Snappy Parquet table... Computing SHA-256 lockfile seal!"
+            },
+            6: {
+              name: "High-Speed Storage Index & Parquet Lock",
+              subtitle: "SQLite FTS5 BM25 Indexing & SHA-256 dil.lock Sealing",
+              tag: "Stage 06: Storage & Lock",
+              desc: "Digital lending rules and schemas indexed into SQLite FTS5 for sub-millisecond retrieval and locked in Parquet columnar files.",
+              specMeta: [
+                { label: "Embedded Search", val: "SQLite FTS5 BM25 Index (< 3ms)" },
+                { label: "Columnar Storage", val: "rules.parquet (Snappy compressed)" },
+                { label: "Security Seal", val: "dist/dil.lock (SHA-256 Tamper-Proof)" },
+                { label: "Initialization", val: "Cold boot in < 4ms" }
+              ],
+              display: "storage",
+              boxTitle: "Storage Engine Tables & Cryptographic Lockfile",
+              storageTables: [
+                { name: "concepts_fts (SQLite FTS5)", rows: 142, size: "48 KB", purpose: "Instant search for KFS, APR, cooling-off" },
+                { name: "rules.parquet (Snappy)", rows: 24, size: "18 KB", purpose: "Vectorized boolean rule evaluation" },
+                { name: "terminology.parquet", rows: 88, size: "12 KB", purpose: "Lexical synonym mapping" }
+              ],
+              lockText: "SHA256(manifest + rules.parquet + concepts.parquet) = 7f21c99182bc...339a [VERIFIED]",
+              mysteryTeaser: "Final Revelation: Can DIL instantly stop a non-compliant fintech integration before any customer funds are disbursed?",
+              compileLog: "Booting dil-banking runtime... Initializing compliance_officer persona... Ready for live disbursal test!"
+            },
+            7: {
+              name: "Final Working DIL Runtime",
+              subtitle: "Enterprise Python Library in Production Banking Agents",
+              tag: "Stage 07: Live DIL",
+              desc: "Digital lending compliance is active in DIL. A fintech partnership loan proposal is audited and verified in 1.8 milliseconds.",
+              specMeta: [
+                { label: "PyPI Package", val: "dil-banking (v1.0.0)" },
+                { label: "Runtime", val: "Pure Python 3.9 - 3.14 (Zero C Extensions)" },
+                { label: "Mean Latency", val: "1.8 ms (Deterministic Code Engine)" },
+                { label: "LLM Safety", val: "100% Hallucination Elimination" }
+              ],
+              display: "runtime",
+              boxTitle: "Production Python Code Execution (app.py)",
+              code: `from dil import DIL
+
+# 1. Initialize compiled DIL banking intelligence
+dil = DIL(domain="banking", jurisdiction="india")
+agent = dil.create_agent(role="compliance_officer")
+
+# 2. Ingest fintech loan proposal
+loan_proposal = { "channel": "digital", "direct_re_to_borrower": False, "cooling_off_days": 1 }
+result, messages = agent.prepare("Review fintech lending integration protocol.", customer_data=loan_proposal)
+
+# 3. Deterministic code evaluation results:
+print("Rule ID        :", result.evaluated_rules[0].rule_id)  # RULE-IN-RBI-DIGITAL-004
+print("Passed         :", result.evaluated_rules[0].passed)   # False
+print("Disbursal Action:", "BLOCK DISBURSAL — Third-party pool account is strictly prohibited")`,
+              simulatedQuery: "Fintech partner proposal specifies loan disbursement via escrow wallet with 1-day cooling-off window.",
+              simulatedVerdict: {
+                ltv: "Indirect Disbursal",
+                cap: "Direct RE-to-Borrower Mandate",
+                rule: "RULE-IN-RBI-DIGITAL-004",
+                status: "BREACH (BLOCK DISBURSAL)",
+                speed: "1.8 ms",
+                promptInstruction: "Proposal breaches RBI Digital Lending Directions: Funds must disburse directly from the Regulated Entity to the borrower account without escrow pass-through. Minimum cooling-off period must be at least 3 days. Disbursal blocked."
+              }
+            }
+          }
+        }
+      };
+
+      const file = FILES_DATA[selectedFile];
+      const stage = file.stages[activeStep];
+
+      // Auto-Play Timer Effect
+      useEffect(() => {
+        let timer = null;
+        if (autoPlay && !isProcessing) {
+          if (activeStep < 7) {
+            timer = setTimeout(() => {
+              triggerUnlock(activeStep + 1);
+            }, 3000);
+          } else {
+            // Reached stage 7: run simulated agent then stop
+            setSimulatedRun(true);
+            setAutoPlay(false);
+          }
+        }
+        return () => clearTimeout(timer);
+      }, [autoPlay, activeStep, isProcessing]);
+
+      // Trigger animated compilation and unlock
+      const triggerUnlock = (targetStep) => {
+        if (isProcessing) return;
+        setProcessingTarget(targetStep);
+        setIsProcessing(true);
+        setProcessingProgress(0);
+
+        let cur = 0;
+        const interval = setInterval(() => {
+          cur += 25;
+          setProcessingProgress(cur);
+          if (cur >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              setIsProcessing(false);
+              setUnlockedStep((prev) => Math.max(prev, targetStep));
+              setActiveStep(targetStep);
+            }, 250);
+          }
+        }, 180);
+      };
+
+      const handleFileChange = (newFileId) => {
+        setSelectedFile(newFileId);
+        setActiveStep(1);
+        setUnlockedStep(1);
+        setSimulatedRun(false);
+        setAutoPlay(false);
+        setIsProcessing(false);
+      };
+
+      const handleResetJourney = () => {
+        setActiveStep(1);
+        setUnlockedStep(1);
+        setSimulatedRun(false);
+        setAutoPlay(false);
+        setIsProcessing(false);
+        setRevealAll(false);
+      };
+
+      const STAGE_STEPS = [
+        { id: 1, label: "01 Raw Intake", short: "Intake" },
+        { id: 2, label: "02 Extraction", short: "Extract" },
+        { id: 3, label: "03 Terminology", short: "Terms" },
+        { id: 4, label: "04 Ontology", short: "Ontology" },
+        { id: 5, label: "05 Rules AST", short: "Rules" },
+        { id: 6, label: "06 Storage & Lock", short: "Storage" },
+        { id: 7, label: "07 Working DIL", short: "Runtime" }
+      ];
+
+      const maxUnlocked = revealAll ? 7 : unlockedStep;
+      const hasNextLocked = activeStep < 7 && activeStep >= maxUnlocked;
+      const nextStepNum = activeStep + 1;
+      const nextStageName = nextStepNum <= 7 ? file.stages[nextStepNum].name : "";
+
+      return (
+        <div className="space-y-4 animate-fadeIn relative">
+          {/* Header & Suspense Journey Controls */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1 border-b border-corporate-200">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs uppercase font-mono font-semibold text-corporate-500">
+                  Data Engineering Pipeline
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse"></span>
+                <span className="text-[10px] font-mono text-corporate-500 bg-corporate-100 px-2 py-0.2 rounded border border-corporate-200">
+                  Interactive Compiler Flow
+                </span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-corporate-900 mt-0.5 tracking-tight">
+                From Raw Data to Working DIL
+              </h2>
+              <p className="text-xs text-corporate-600 mt-0.5">
+                Animated Suspense Journey: Select an authoritative regulatory file, then compile each layer step-by-step with zero hallucination.
+              </p>
+            </div>
+
+            {/* Suspense Controls: Auto-Play, Reset, Reveal All */}
+            <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
+              <button
+                onClick={() => setAutoPlay((prev) => !prev)}
+                className={`px-3 py-1.5 rounded text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer border ${
+                  autoPlay
+                    ? "bg-accent-rose text-white border-rose-700 animate-pulse"
+                    : "bg-corporate-900 text-white border-corporate-900 hover:bg-corporate-800"
+                }`}
+                title="Automatically step through all transformation stages with suspenseful reveals"
+              >
+                <span>{autoPlay ? "❚❚ Pause Auto-Play" : "▶ Auto-Play Journey"}</span>
+              </button>
+
+              <button
+                onClick={handleResetJourney}
+                className="px-2.5 py-1.5 rounded text-xs font-mono text-corporate-700 bg-corporate-50 hover:bg-corporate-100 border border-corporate-200 cursor-pointer"
+                title="Reset back to Stage 01 with locked mystery stages"
+              >
+                ↺ Reset
+              </button>
+
+              <button
+                onClick={() => {
+                  setRevealAll((prev) => !prev);
+                  if (!revealAll) setUnlockedStep(7);
+                }}
+                className="px-2 py-1.5 rounded text-xs font-mono text-corporate-500 hover:text-corporate-900 border border-corporate-200 bg-white cursor-pointer"
+                title="Toggle between Mystery Mode and Instant View"
+              >
+                {revealAll ? "Mystery Mode" : "Reveal All"}
+              </button>
+            </div>
+          </div>
+
+          {/* STEP A: Clickable Raw Source Files Selector */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-mono uppercase text-corporate-500 font-bold tracking-wider">
+                1. Select Collected Regulatory Document to Compile:
+              </span>
+              <span className="text-[10px] text-corporate-400 font-mono">
+                Click any file to initialize compilation pipeline
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+              {Object.values(FILES_DATA).map((f) => {
+                const isSelected = selectedFile === f.id;
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => handleFileChange(f.id)}
+                    className={`p-3 rounded-lg border text-left transition-all cursor-pointer relative ${
+                      isSelected
+                        ? "bg-corporate-900 text-white border-corporate-900 shadow-md ring-2 ring-corporate-400/20"
+                        : "bg-white text-corporate-700 border-corporate-200 hover:bg-corporate-50 hover:border-corporate-300"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-1 mb-1">
+                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                        isSelected ? "bg-corporate-800 text-corporate-200" : "bg-corporate-100 text-corporate-600"
+                      }`}>
+                        {f.badge}
+                      </span>
+                      {isSelected ? (
+                        <span className="text-[10px] font-mono font-bold text-accent-emerald flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span>
+                          ACTIVE PIPELINE
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-mono text-corporate-400">Click to Load</span>
+                      )}
+                    </div>
+                    <strong className="text-xs font-bold block truncate leading-tight">
+                      {f.name}
+                    </strong>
+                    <div className={`text-[10px] font-mono truncate mt-1 ${
+                      isSelected ? "text-corporate-300" : "text-corporate-400"
+                    }`}>
+                      {f.subject}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* STEP B: 7-Stage Horizontal Pipeline with Locked / Unlocked States */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-mono uppercase text-corporate-500 font-bold tracking-wider">
+                2. Transformation Pipeline (Locked with Suspense Until Compiled):
+              </span>
+              <span className="text-[10px] font-mono text-corporate-500">
+                Unlocked: <strong className="text-corporate-900">{maxUnlocked} / 7</strong> Stages
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1 overflow-x-auto custom-scrollbar pb-1">
+              {STAGE_STEPS.map((s) => {
+                const isUnlocked = s.id <= maxUnlocked;
+                const isActive = activeStep === s.id;
+                const isPassed = isUnlocked && activeStep > s.id;
+
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => {
+                      if (isUnlocked) {
+                        setActiveStep(s.id);
+                        setSimulatedRun(false);
+                      } else {
+                        // Click on locked step triggers suspense reveal
+                        triggerUnlock(s.id);
+                      }
+                    }}
+                    className={`px-2.5 py-1.5 rounded text-xs font-mono font-medium whitespace-nowrap transition-all cursor-pointer border flex items-center gap-1.5 ${
+                      isActive
+                        ? "bg-corporate-900 text-white border-corporate-900 shadow-xs ring-1 ring-corporate-400"
+                        : isPassed
+                        ? "bg-corporate-100 text-corporate-800 border-corporate-200 hover:bg-corporate-200"
+                        : isUnlocked
+                        ? "bg-white text-corporate-700 border-corporate-200 hover:bg-corporate-50"
+                        : "bg-corporate-50 text-corporate-400 border-dashed border-corporate-300 hover:bg-corporate-100/60"
+                    }`}
+                  >
+                    {!isUnlocked ? (
+                      <span className="text-[10px] font-bold text-corporate-400">[LOCKED]</span>
+                    ) : isPassed ? (
+                      <span className="text-accent-emerald text-[10px] font-bold">[DONE]</span>
+                    ) : (
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent-blue"></span>
+                    )}
+                    <span>{s.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* STEP C: Main Interactive Canvas with Animated Processing Overlay */}
+          <div className="card-clean p-4 sm:p-5 rounded-lg space-y-4 relative overflow-hidden">
+            {/* Animated Processing State Overlay */}
+            {isProcessing && (
+              <div className="absolute inset-0 z-30 bg-corporate-900/90 backdrop-blur-xs flex flex-col items-center justify-center p-6 space-y-4 text-white animate-fadeIn">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-accent-blue animate-ping"></span>
+                  <span className="text-xs font-mono uppercase tracking-widest text-corporate-300 font-bold">
+                    Compiling Regulatory Transformation Pipeline
+                  </span>
+                </div>
+
+                <div className="text-base sm:text-lg font-mono font-bold text-white text-center">
+                  Unlocking Stage 0{processingTarget}: {file.stages[processingTarget].name}
+                </div>
+
+                {/* Animated Progress Bar */}
+                <div className="w-full max-w-md bg-corporate-800 h-2 rounded-full overflow-hidden border border-corporate-700">
+                  <div
+                    className="bg-accent-blue h-full transition-all duration-200 ease-out"
+                    style={{ width: `${processingProgress}%` }}
+                  ></div>
+                </div>
+
+                <div className="text-xs font-mono text-corporate-300 bg-corporate-800/80 p-3 rounded border border-corporate-700 max-w-md w-full text-left space-y-1">
+                  <div className="text-corporate-400 text-[10px] uppercase font-bold">&gt; COMPILATION TICKER:</div>
+                  <div className="text-emerald-400 text-[11px] font-mono leading-tight">
+                    {file.stages[processingTarget - 1].compileLog}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Stage Title and Navigation Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-corporate-100 gap-2">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-corporate-100 text-corporate-700 border border-corporate-200">
+                    STAGE 0{activeStep} OF 07
+                  </span>
+                  <h3 className="text-base font-bold text-corporate-900">{stage.name}</h3>
+                  <span className="text-[10px] font-mono text-accent-emerald bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-bold">
+                    ACTIVE STAGE
+                  </span>
+                </div>
+                <div className="text-xs font-mono text-corporate-500 mt-0.5">
+                  {stage.subtitle} · Ref: <span className="text-corporate-800">{file.docRef}</span>
+                </div>
+              </div>
+
+              {/* Prev / Next Nav Buttons */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setActiveStep((prev) => Math.max(prev - 1, 1));
+                    setSimulatedRun(false);
+                  }}
+                  disabled={activeStep === 1}
+                  className="px-2.5 py-1 text-xs rounded border border-corporate-200 bg-corporate-50 hover:bg-corporate-100 disabled:opacity-30 text-corporate-700 font-medium cursor-pointer"
+                >
+                  ← Prev
+                </button>
+
+                {activeStep < 7 ? (
+                  <button
+                    onClick={() => {
+                      if (activeStep < maxUnlocked) {
+                        setActiveStep((prev) => prev + 1);
+                      } else {
+                        triggerUnlock(activeStep + 1);
+                      }
+                      setSimulatedRun(false);
+                    }}
+                    className="px-3 py-1 text-xs rounded bg-corporate-900 hover:bg-corporate-800 text-white font-medium transition-colors cursor-pointer flex items-center gap-1 shadow-xs"
+                  >
+                    <span>{activeStep < maxUnlocked ? "View Next Stage →" : `Transform to Stage 0${activeStep + 1} →`}</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleResetJourney}
+                    className="px-3 py-1 text-xs rounded bg-corporate-900 hover:bg-corporate-800 text-white font-medium cursor-pointer"
+                  >
+                    ↺ Replay Transformation Journey
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Split Details & Artifact View */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+              {/* Left Column: Description & Metadata */}
+              <div className="lg:col-span-5 space-y-3.5">
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-mono font-bold text-corporate-500 uppercase tracking-wider block">
+                    Transformation Process:
+                  </span>
+                  <p className="text-xs text-corporate-700 leading-relaxed">
+                    {stage.desc}
+                  </p>
+                </div>
+
+                <div className="p-3 rounded bg-corporate-50 border border-corporate-200 space-y-2">
+                  <span className="text-[10px] font-mono font-bold text-corporate-500 uppercase tracking-wider block">
+                    Technical Specifications:
+                  </span>
+                  <div className="space-y-1.5 font-mono text-[11px]">
+                    {stage.specMeta.map((m, idx) => (
+                      <div key={idx} className="flex justify-between items-center text-corporate-700 border-b border-corporate-200/60 pb-1 last:border-b-0 last:pb-0">
+                        <span className="text-corporate-500">{m.label}:</span>
+                        <strong className="text-corporate-900 text-right max-w-[200px] truncate">{m.val}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* If on Stage 7: Production Sandbox Trigger */}
+                {activeStep === 7 && (
+                  <div className="p-3 rounded bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2">
+                    <div className="flex items-center gap-1.5 font-bold text-xs">
+                      <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span>
+                      <span>DIL Ready for Production Execution</span>
+                    </div>
+                    <p className="text-[11px] text-emerald-800 leading-relaxed">
+                      This document is compiled into DIL. It executes in pure Python in &lt; 4ms, producing audit-grounded context for LLM agents.
+                    </p>
+                    <button
+                      onClick={() => setSimulatedRun(true)}
+                      className="w-full py-2 rounded bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold font-mono transition-colors cursor-pointer shadow-xs"
+                    >
+                      {simulatedRun ? "Re-Run Live Execution Test" : "Run Live Agent Preparation (Simulate)"}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column: Code / Artifact Inspector */}
+              <div className="lg:col-span-7 space-y-2">
+                <div className="flex items-center justify-between pb-1">
+                  <span className="text-[11px] font-mono font-bold text-corporate-500 uppercase tracking-wider">
+                    {stage.boxTitle}
+                  </span>
+                  {stage.code && (
+                    <button
+                      onClick={() => copyCode(stage.code)}
+                      className="text-[10px] font-mono px-2 py-0.5 rounded bg-corporate-100 hover:bg-corporate-200 text-corporate-700 cursor-pointer"
+                    >
+                      {copied ? "Copied" : "Copy Schema"}
+                    </button>
+                  )}
+                </div>
+
+                {/* Display 1: Raw Text View */}
+                {stage.display === "raw_text" && (
+                  <div className="p-3.5 rounded bg-corporate-100 border border-corporate-200 text-xs font-serif text-corporate-800 leading-relaxed italic whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar">
+                    {stage.content}
+                  </div>
+                )}
+
+                {/* Display 2: Parsed Tokens Table */}
+                {stage.display === "tokens" && (
+                  <div className="overflow-x-auto rounded border border-corporate-200">
+                    <table className="w-full text-left text-xs font-mono">
+                      <thead className="bg-corporate-100 text-corporate-700 border-b border-corporate-200 text-[11px]">
+                        <tr>
+                          <th className="p-2">Clause Ref</th>
+                          <th className="p-2">Parsed Condition</th>
+                          <th className="p-2">Quantitative Cap</th>
+                          <th className="p-2">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-corporate-100 bg-white text-[11px]">
+                        {stage.tokens.map((t, idx) => (
+                          <tr key={idx} className="hover:bg-corporate-50">
+                            <td className="p-2 font-bold text-corporate-900 whitespace-nowrap">{t.clause}</td>
+                            <td className="p-2 text-corporate-700 font-mono text-[10px]">{t.condition}</td>
+                            <td className="p-2 text-corporate-900 font-bold whitespace-nowrap">{t.ceiling}</td>
+                            <td className="p-2 text-accent-blue font-semibold">{t.action}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* Display 3: JSON Code Schema */}
+                {stage.display === "code" && (
+                  <pre className="text-[11px] text-corporate-800 bg-corporate-100 p-3.5 rounded font-mono overflow-x-auto custom-scrollbar leading-relaxed max-h-72 border border-corporate-200">
+                    <code>{stage.code}</code>
+                  </pre>
+                )}
+
+                {/* Display 4: Storage Engine Tables & Lockfile */}
+                {stage.display === "storage" && (
+                  <div className="space-y-3 font-mono text-xs">
+                    <div className="overflow-x-auto rounded border border-corporate-200">
+                      <table className="w-full text-left">
+                        <thead className="bg-corporate-100 text-corporate-700 border-b border-corporate-200 text-[11px]">
+                          <tr>
+                            <th className="p-2">Storage Artifact</th>
+                            <th className="p-2">Records</th>
+                            <th className="p-2">Disk Footprint</th>
+                            <th className="p-2">Role</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-corporate-100 bg-white text-[11px]">
+                          {stage.storageTables.map((tbl, idx) => (
+                            <tr key={idx} className="hover:bg-corporate-50">
+                              <td className="p-2 font-bold text-corporate-900">{tbl.name}</td>
+                              <td className="p-2 text-corporate-700">{tbl.rows} rows</td>
+                              <td className="p-2 text-corporate-700">{tbl.size}</td>
+                              <td className="p-2 text-corporate-600">{tbl.purpose}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="p-2.5 rounded bg-corporate-900 text-white text-[11px] space-y-1">
+                      <div className="text-corporate-400 text-[10px] uppercase font-bold">Tamper-Proof Lockfile Checksum:</div>
+                      <div className="text-emerald-400 truncate">{stage.lockText}</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Display 5: Runtime Python Code & Live Simulator */}
+                {stage.display === "runtime" && (
+                  <div className="space-y-3">
+                    <pre className="text-[11px] text-corporate-800 bg-corporate-100 p-3 rounded font-mono overflow-x-auto custom-scrollbar leading-relaxed border border-corporate-200 max-h-48">
+                      <code>{stage.code}</code>
+                    </pre>
+
+                    {simulatedRun && (
+                      <div className="p-3.5 rounded bg-corporate-900 text-white space-y-2 font-mono text-xs animate-fadeIn border border-corporate-800">
+                        <div className="flex items-center justify-between pb-1 border-b border-corporate-800">
+                          <span className="text-corporate-300 font-bold text-[11px]">DIL Agent Live Execution Results</span>
+                          <span className="text-emerald-400 text-[10px]">Execution Latency: {stage.simulatedVerdict.speed}</span>
+                        </div>
+                        <div className="text-corporate-300 text-[11px]">
+                          <span className="text-corporate-400">Query:</span> "{stage.simulatedQuery}"
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                          <div className="p-2 rounded bg-corporate-800">
+                            <span className="text-corporate-400 block text-[10px]">Evaluated Value</span>
+                            <span className="text-white font-bold">{stage.simulatedVerdict.ltv}</span>
+                          </div>
+                          <div className="p-2 rounded bg-corporate-800">
+                            <span className="text-corporate-400 block text-[10px]">Statutory Ceiling</span>
+                            <span className="text-white font-bold">{stage.simulatedVerdict.cap}</span>
+                          </div>
+                        </div>
+                        <div className="p-2 rounded bg-rose-950/80 border border-rose-800 text-rose-200 text-[11px] flex justify-between items-center">
+                          <span>Status: [{stage.simulatedVerdict.status}]</span>
+                          <span className="text-[10px] text-rose-300">{stage.simulatedVerdict.rule}</span>
+                        </div>
+                        <div className="text-[11px] text-corporate-300 pt-1">
+                          <strong className="text-corporate-100 block text-[10px] uppercase font-bold">Injected LLM Instruction:</strong>
+                          <p className="italic text-corporate-200 text-[10px] leading-tight">
+                            "{stage.simulatedVerdict.promptInstruction}"
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Suspense Teaser Banner (What will come next?) */}
+            {activeStep < 7 && (
+              <div className="p-3.5 rounded-lg bg-corporate-900 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-sm border border-corporate-800">
+                <div className="space-y-0.5 max-w-xl">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent-blue bg-blue-950/80 px-2 py-0.5 rounded border border-blue-800">
+                      Mystery Ahead · Next Transformation
+                    </span>
+                    <span className="text-corporate-400 font-mono text-[10px]">Stage 0{nextStepNum}: {nextStageName}</span>
+                  </div>
+                  <p className="text-xs text-corporate-200 italic font-serif leading-relaxed">
+                    "{stage.mysteryTeaser}"
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => triggerUnlock(nextStepNum)}
+                  className="px-4 py-2 rounded bg-white hover:bg-corporate-100 text-corporate-900 font-mono font-bold text-xs transition-all shadow-sm hover:shadow shrink-0 cursor-pointer flex items-center gap-1.5"
+                >
+                  <span>Transform & Reveal Stage 0{nextStepNum} →</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+
+    // =========================================================================
+    // SLIDE 9: Case Study: Single Regulation Codification
+    // =========================================================================
+    function Slide9() {
+      const [loanAmount, setLoanAmount] = useState(85);
+      const propertyValue = 100;
+      const ltv = (loanAmount / propertyValue) * 100;
+      
+      let maxLtv = 75;
+      let ruleId = "RULE-IN-RBI-LTV-003";
+      let tier = "Tier 3 (> ₹75 Lakh)";
+      if (loanAmount <= 30) {
+        maxLtv = 90;
+        ruleId = "RULE-IN-RBI-LTV-001";
+        tier = "Tier 1 (Up to ₹30 Lakh)";
+      } else if (loanAmount <= 75) {
+        maxLtv = 80;
+        ruleId = "RULE-IN-RBI-LTV-002";
+        tier = "Tier 2 (₹30L to ₹75L)";
+      }
+      
+      const isPassed = ltv <= maxLtv;
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          <div>
+            <div className="text-xs uppercase font-mono font-semibold text-corporate-500">Case Study</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-corporate-900 mt-1">From Legal Text to Executable Code</h2>
+            <p className="text-sm text-corporate-600 mt-1">Tracing the codification of the <em>RBI Housing Finance Master Directions 2025</em> (LTV Limits).</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div className="lg:col-span-7 space-y-3">
+              <div className="card-clean p-4 rounded-lg space-y-1.5">
+                <span className="text-[10px] font-mono font-bold text-corporate-400 uppercase">Stage 1: Raw Statutory Prose</span>
+                <p className="text-xs text-corporate-700 font-serif italic bg-corporate-50 p-2.5 rounded border border-corporate-200">
+                  "For individual housing loans up to ₹30 lakh, LTV shall not exceed 90%. For loans above ₹30 lakh and up to ₹75 lakh, LTV shall not exceed 80%. For loans above ₹75 lakh, LTV shall not exceed 75%."
+                </p>
+              </div>
+
+              <div className="card-clean p-4 rounded-lg space-y-1.5">
+                <span className="text-[10px] font-mono font-bold text-corporate-400 uppercase">Stage 2: Entity & Parameter Extraction</span>
+                <p className="text-xs text-corporate-600">
+                  Extracted statutory terms <code className="font-mono text-corporate-900 bg-corporate-100 px-1">LTV</code>, <code className="font-mono text-corporate-900 bg-corporate-100 px-1">property_value</code>, <code className="font-mono text-corporate-900 bg-corporate-100 px-1">down_payment</code> into standardized schemas with operational caveats.
+                </p>
+              </div>
+
+              <div className="card-clean p-4 rounded-lg space-y-1.5">
+                <span className="text-[10px] font-mono font-bold text-corporate-400 uppercase">Stage 3: Executable Rule Schema (india.json)</span>
+                <pre className="text-[11px] text-corporate-800 bg-corporate-100 p-2.5 rounded font-mono overflow-x-auto custom-scrollbar">
+{`"id": "RULE-IN-RBI-LTV-003",
+"condition": { "parameter": "ltv_ratio", "operator": "<=", "threshold": 0.75 },
+"applies_when": { "parameter": "loan_amount", "operator": ">", "threshold": 7500000 },
+"action": "reject",
+"citation": "SRC-RBI-DOR-LENDING-HOUSING"`}
+                </pre>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5 card-clean p-4 sm:p-5 rounded-lg space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-corporate-100">
+                <span className="text-xs uppercase font-mono text-corporate-400">Live Rule Simulator</span>
+                <span className="text-[11px] font-mono text-corporate-500">Interactive</span>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <div className="flex justify-between text-xs text-corporate-700 mb-1">
+                    <span>Borrower Requested Loan:</span>
+                    <strong className="text-corporate-900 font-mono">₹{loanAmount} Lakh</strong>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="10" 
+                    max="100" 
+                    value={loanAmount} 
+                    onChange={(e) => setLoanAmount(Number(e.target.value))}
+                    className="w-full accent-corporate-900 cursor-pointer"
+                  />
+                  <div className="text-[10px] text-corporate-400 flex justify-between font-mono">
+                    <span>₹10L</span>
+                    <span>₹30L (90%)</span>
+                    <span>₹75L (80%)</span>
+                    <span>₹100L (75%)</span>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded bg-corporate-50 border border-corporate-200 text-xs space-y-1 font-mono">
+                  <div className="flex justify-between">
+                    <span className="text-corporate-500">Property Value:</span>
+                    <span className="text-corporate-800">₹100 Lakh (₹1 Cr)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-corporate-500">Calculated LTV:</span>
+                    <span className="text-corporate-900 font-bold">{ltv.toFixed(1)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-corporate-500">Applicable Tier:</span>
+                    <span className="text-corporate-800">{tier}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-corporate-500">Statutory Cap:</span>
+                    <span className="text-corporate-800 font-bold">{maxLtv}%</span>
+                  </div>
+                </div>
+
+                <div className={`p-3 rounded border text-xs font-bold flex items-center justify-between font-mono ${
+                  isPassed 
+                    ? "bg-emerald-50 border-emerald-200 text-emerald-800" 
+                    : "bg-rose-50 border-rose-200 text-rose-800"
+                }`}>
+                  <span>{isPassed ? "[PASS] STATUTORY COMPLIANT" : "[FAIL] STATUTORY BREACH"}</span>
+                  <span className="text-[11px]">{ruleId}</span>
+                </div>
+                <p className="text-[11px] text-corporate-500">
+                  {isPassed 
+                    ? `Complies with RBI statutory limit of ${maxLtv}%.` 
+                    : `Exceeds statutory ceiling of ${maxLtv}% by ${(ltv - maxLtv).toFixed(1)}%. Maximum permissible loan is ₹${maxLtv} Lakh.`}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // SLIDE 10: Enterprise Database Pipeline
+    // =========================================================================
+    function Slide10() {
+      const [selectedProfile, setSelectedProfile] = useState("CUST-8041");
+
+      const PROFILES = {
+        "CUST-8041": {
+          name: "Rahul Sharma",
+          salary: "₹1,50,000 / mo",
+          cibil: 780,
+          loan: "₹70,00,000",
+          property: "₹85,00,000",
+          emi: "₹20,000",
+          ltv: 82.35,
+          dti: 13.33,
+          ltvPass: false,
+          cibilPass: true
+        },
+        "CUST-9012": {
+          name: "Priya Verma",
+          salary: "₹95,000 / mo",
+          cibil: 640,
+          loan: "₹40,00,000",
+          property: "₹55,00,000",
+          emi: "₹12,000",
+          ltv: 72.72,
+          dti: 12.63,
+          ltvPass: true,
+          cibilPass: false
+        }
+      };
+
+      const prof = PROFILES[selectedProfile];
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          <div>
+            <div className="text-xs uppercase font-mono font-semibold text-corporate-500">Integration Architecture</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-corporate-900 mt-1">Enterprise Database to LLM Pipeline</h2>
+            <p className="text-sm text-corporate-600 mt-1">Ingest records directly from Core Banking Systems (CBS), PostgreSQL, MySQL, or CRM databases.</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div className="lg:col-span-5 space-y-4">
+              <div className="card-clean p-4 rounded-lg space-y-3">
+                <div className="text-xs uppercase font-mono text-corporate-400">Select Customer Record from Bank Database</div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button 
+                    onClick={() => setSelectedProfile("CUST-8041")}
+                    className={`p-2.5 rounded border text-left text-xs transition-all cursor-pointer ${
+                      selectedProfile === "CUST-8041" ? "bg-corporate-900 border-corporate-900 text-white" : "bg-white border-corporate-200 text-corporate-700"
+                    }`}
+                  >
+                    <strong>Rahul Sharma</strong>
+                    <div className="text-[10px] font-mono opacity-80">ID: CUST-8041 (LTV Issue)</div>
+                  </button>
+                  <button 
+                    onClick={() => setSelectedProfile("CUST-9012")}
+                    className={`p-2.5 rounded border text-left text-xs transition-all cursor-pointer ${
+                      selectedProfile === "CUST-9012" ? "bg-corporate-900 border-corporate-900 text-white" : "bg-white border-corporate-200 text-corporate-700"
+                    }`}
+                  >
+                    <strong>Priya Verma</strong>
+                    <div className="text-[10px] font-mono opacity-80">ID: CUST-9012 (CIBIL Issue)</div>
+                  </button>
+                </div>
+
+                <div className="p-3 bg-corporate-100 rounded border border-corporate-200 text-[11px] font-mono space-y-1 text-corporate-800">
+                  <div className="text-corporate-500 pb-1 border-b border-corporate-200">Database Row: customer_profiles</div>
+                  <div>Applicant Name: {prof.name}</div>
+                  <div>Monthly Income: {prof.salary}</div>
+                  <div>CIBIL Score: {prof.cibil}</div>
+                  <div>Requested Loan: {prof.loan}</div>
+                  <div>Property Valuation: {prof.property}</div>
+                </div>
+              </div>
+
+              <div className="p-3 rounded bg-white border border-corporate-200 text-xs font-mono text-corporate-700">
+                <code>agent.prepare(query, customer_data=db_row)</code>
+              </div>
+            </div>
+
+            <div className="lg:col-span-7 card-clean p-4 sm:p-5 rounded-lg space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-corporate-100">
+                <span className="text-xs uppercase font-mono text-corporate-400">DIL Code Evaluation Verdicts</span>
+                <span className="text-[11px] font-mono text-accent-emerald font-bold">Execution: 2.1 ms</span>
+              </div>
+
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+                  <div className="p-2.5 rounded bg-corporate-50 border border-corporate-200">
+                    <span className="text-corporate-500 block text-[10px]">Calculated LTV Ratio</span>
+                    <strong className="text-corporate-900 text-base">{prof.ltv}%</strong>
+                  </div>
+                  <div className="p-2.5 rounded bg-corporate-50 border border-corporate-200">
+                    <span className="text-corporate-500 block text-[10px]">Calculated DTI Ratio</span>
+                    <strong className="text-corporate-900 text-base">{prof.dti}%</strong>
+                  </div>
+                </div>
+
+                <div className="space-y-2 font-mono text-xs">
+                  <div className={`p-2.5 rounded border flex items-center justify-between ${
+                    prof.ltvPass ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-rose-50 border-rose-200 text-rose-800"
+                  }`}>
+                    <span>{prof.ltvPass ? "[PASS]" : "[BREACH]"}: RBI Housing LTV Cap (80% Max)</span>
+                    <span>{prof.ltv}%</span>
+                  </div>
+
+                  <div className={`p-2.5 rounded border flex items-center justify-between ${
+                    prof.cibilPass ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-rose-50 border-rose-200 text-rose-800"
+                  }`}>
+                    <span>{prof.cibilPass ? "[PASS]" : "[BREACH]"}: CIBIL Prime Cutoff (≥ 700)</span>
+                    <span>Score: {prof.cibil}</span>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded bg-corporate-50 border border-corporate-200 text-xs text-corporate-700 leading-relaxed">
+                  <strong className="text-corporate-900 block mb-0.5">LLM Prompt Construction:</strong>
+                  DIL delivers verified verdicts directly into the system context. The LLM is instructed on the exact policy action, preventing incorrect approval commitments.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // SLIDE 11: Commercial Banking Use Cases
+    // =========================================================================
+    function Slide11() {
+      const [activeCase, setActiveCase] = useState(1);
+
+      const USE_CASES = [
+        {
+          id: 1,
+          title: "Retail Loan Advisor",
+          persona: "loan_advisor",
+          businessValue: "Accelerates loan origination while preventing unauthorized approval guarantees.",
+          computation: "Calculates LTV & DTI in code, checks statutory property value tiers, and computes required down payment.",
+          sampleOutput: "Under RBI Master Directions, housing loans between ₹30L and ₹75L have an 80% LTV cap. For your ₹85L property, the maximum allowable loan is ₹68 Lakh, requiring a ₹17 Lakh down payment."
+        },
+        {
+          id: 2,
+          title: "Credit Underwriting Memo (CAM)",
+          persona: "credit_analyst",
+          businessValue: "Generates risk-governed Credit Appraisal Memos with zero mathematical errors.",
+          computation: "Evaluates Debt Service Coverage Ratio (DSCR ≥ 1.25x), promoter margin, and collateral coverage ratios.",
+          sampleOutput: "Proposal fails statutory policy threshold: calculated DSCR 1.12x vs requirement of 1.25x. Action: Escalate proposal to Central Credit Committee for deviation approval."
+        },
+        {
+          id: 3,
+          title: "MSME Nayak Working Capital",
+          persona: "credit_analyst",
+          businessValue: "Standardizes working capital assessment under central bank turnover guidelines.",
+          computation: "Executes Nayak Committee turnover formula: 20% working capital bank finance + 5% promoter margin.",
+          sampleOutput: "For your projected annual sales of ₹4 Crore, eligible working capital bank loan is ₹80 Lakh (20%), with mandatory borrower promoter contribution of ₹20 Lakh (5%)."
+        },
+        {
+          id: 4,
+          title: "Digital Lending Compliance",
+          persona: "compliance_officer",
+          businessValue: "Automates regulatory audit for digital consumer loans and fintech partnerships.",
+          computation: "Verifies Key Fact Statement (KFS) generation, APR disclosure, direct disbursement, and cooling-off periods.",
+          sampleOutput: "Disbursement complies with RBI Digital Lending Directions: Funds transferred directly to borrower account without third-party pass-through; 3-day cooling-off window confirmed."
+        }
+      ];
+
+      const current = USE_CASES.find(c => c.id === activeCase);
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          <div>
+            <div className="text-xs uppercase font-mono font-semibold text-corporate-500">Commercial Applications</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-corporate-900 mt-1">Real-World Enterprise Banking Use Cases</h2>
+            <p className="text-sm text-corporate-600 mt-1">Production deployment patterns across credit risk, retail lending, and regulatory compliance.</p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {USE_CASES.map(c => (
+              <button
+                key={c.id}
+                onClick={() => setActiveCase(c.id)}
+                className={`p-3 rounded border text-left transition-all cursor-pointer ${
+                  activeCase === c.id 
+                    ? "bg-corporate-900 border-corporate-900 text-white shadow-xs" 
+                    : "card-clean text-corporate-700 hover:bg-corporate-100"
+                }`}
+              >
+                <div className="text-[10px] font-mono opacity-70">CASE 0{c.id}</div>
+                <strong className="text-xs block mt-0.5">{c.title}</strong>
+              </button>
+            ))}
+          </div>
+
+          <div className="card-clean p-5 sm:p-6 rounded-lg space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-corporate-100 gap-2">
+              <div>
+                <h3 className="text-base font-bold text-corporate-900">{current.title}</h3>
+                <span className="text-xs font-mono text-corporate-500">Operating Persona: {current.persona}</span>
+              </div>
+              <span className="text-xs px-2.5 py-1 rounded bg-corporate-100 font-mono text-corporate-700">
+                Financial Grade
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div className="space-y-2 p-3.5 sm:p-4 rounded bg-corporate-50 border border-corporate-200">
+                <span className="text-corporate-900 font-bold block uppercase tracking-wider font-mono">Business Objective:</span>
+                <p className="text-corporate-600 leading-relaxed">{current.businessValue}</p>
+                
+                <span className="text-corporate-900 font-bold block uppercase tracking-wider font-mono pt-2">DIL Code Computation:</span>
+                <p className="text-corporate-600 leading-relaxed">{current.computation}</p>
+              </div>
+
+              <div className="space-y-2 p-3.5 sm:p-4 rounded bg-corporate-900 text-white">
+                <span className="text-corporate-300 font-bold block uppercase tracking-wider font-mono text-[11px]">Audit-Grounded LLM Output:</span>
+                <p className="text-corporate-100 italic font-serif leading-relaxed pt-1">
+                  "{current.sampleOutput}"
+                </p>
+                <div className="text-[10px] text-corporate-400 font-mono pt-2 border-t border-corporate-800">
+                  Zero Prompt Engineering Required in Client App
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // SLIDE 12: Production Verification & Benchmarks
+    // =========================================================================
+    function Slide12() {
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          <div>
+            <div className="text-xs uppercase font-mono font-semibold text-corporate-500">Quality Assurance</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-corporate-900 mt-1">Production Verification & Golden Benchmark</h2>
+            <p className="text-sm text-corporate-600 mt-1">Continuous regression validation across 110 automated banking scenarios.</p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div className="card-clean p-4 rounded-lg space-y-1">
+              <span className="text-xs text-corporate-400 font-mono uppercase">Overall Pass Rate</span>
+              <div className="text-2xl sm:text-3xl font-extrabold text-corporate-900 font-mono">100.0%</div>
+              <span className="text-[11px] text-corporate-500 font-mono">110 / 110 Passed</span>
+            </div>
+            <div className="card-clean p-4 rounded-lg space-y-1">
+              <span className="text-xs text-corporate-400 font-mono uppercase">Mean Latency</span>
+              <div className="text-2xl sm:text-3xl font-extrabold text-corporate-900 font-mono">3.3 ms</div>
+              <span className="text-[11px] text-corporate-500 font-mono">P95: 5.4 ms</span>
+            </div>
+            <div className="card-clean p-4 rounded-lg space-y-1">
+              <span className="text-xs text-corporate-400 font-mono uppercase">Adversarial Resistance</span>
+              <div className="text-2xl sm:text-3xl font-extrabold text-corporate-900 font-mono">100%</div>
+              <span className="text-[11px] text-corporate-500 font-mono">20/20 Jailbreaks Blocked</span>
+            </div>
+            <div className="card-clean p-4 rounded-lg space-y-1">
+              <span className="text-xs text-corporate-400 font-mono uppercase">Out-of-Domain Polysemy</span>
+              <div className="text-2xl sm:text-3xl font-extrabold text-corporate-900 font-mono">0.0%</div>
+              <span className="text-[11px] text-corporate-500 font-mono">25/25 Zero False Positives</span>
+            </div>
+          </div>
+
+          <div className="card-clean p-4 sm:p-5 rounded-lg space-y-3">
+            <div className="text-xs uppercase font-mono text-corporate-400 pb-2 border-b border-corporate-100">
+              Benchmark Category Pass Breakdown
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div className="p-3 bg-corporate-50 rounded border border-corporate-200 flex items-center justify-between">
+                <div>
+                  <strong className="text-corporate-900">Deterministic Mathematical Calculations</strong>
+                  <div className="text-corporate-500 text-[11px]">LTV, DTI, FOIR, Nayak 20% turnover limits</div>
+                </div>
+                <span className="font-mono font-bold text-corporate-900">35 / 35 (100%)</span>
+              </div>
+              <div className="p-3 bg-corporate-50 rounded border border-corporate-200 flex items-center justify-between">
+                <div>
+                  <strong className="text-corporate-900">Statutory Concepts & Regulatory Ontology</strong>
+                  <div className="text-corporate-500 text-[11px]">IRACP NPA criteria, DICGC insurance, KFS</div>
+                </div>
+                <span className="font-mono font-bold text-corporate-900">30 / 30 (100%)</span>
+              </div>
+              <div className="p-3 bg-corporate-50 rounded border border-corporate-200 flex items-center justify-between">
+                <div>
+                  <strong className="text-corporate-900">Adversarial Prompt Injections</strong>
+                  <div className="text-corporate-500 text-[11px]">Jailbreak attempts forcing 95% LTV approval</div>
+                </div>
+                <span className="font-mono font-bold text-corporate-900">20 / 20 (100%)</span>
+              </div>
+              <div className="p-3 bg-corporate-50 rounded border border-corporate-200 flex items-center justify-between">
+                <div>
+                  <strong className="text-corporate-900">Out-of-Domain Polysemy Filtering</strong>
+                  <div className="text-corporate-500 text-[11px]">General questions (weather, general trivia)</div>
+                </div>
+                <span className="font-mono font-bold text-corporate-900">25 / 25 (100%)</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3.5 sm:p-4 rounded-lg bg-corporate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <h4 className="text-sm font-bold">Ready for Production Deployment</h4>
+              <p className="text-xs text-corporate-300">Package available on PyPI. CI/CD verified across Python 3.9 through 3.14.</p>
+            </div>
+            <code className="text-xs font-mono bg-corporate-800 px-3 py-1.5 rounded text-corporate-100 border border-corporate-700">
+              pip install dil-banking
+            </code>
+          </div>
+        </div>
+      );
+    }
+
+    // Render Application
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>

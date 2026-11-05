@@ -1,0 +1,167 @@
+[
+  {
+    "id": "proc.credit_appraisal",
+    "name": "Retail Credit File Review & Underwriting",
+    "category": "lending",
+    "description": "Standard underwriting workflow for retail loan review, eligibility calculation, and credit sanction.",
+    "steps": [
+      {
+        "step_number": 1,
+        "name": "Intake & Identification",
+        "description": "Collect borrower application, identify borrower profile, and verify identity via KYC records."
+      },
+      {
+        "step_number": 2,
+        "name": "Bureau & History Check",
+        "description": "Pull credit bureau report (e.g., CIBIL/Experian), check repayment track record and score cutoffs."
+      },
+      {
+        "step_number": 3,
+        "name": "Financial Extraction & Computation",
+        "description": "Extract declared income, compute debt-to-income (DTI / FOIR), and verify disposable income."
+      },
+      {
+        "step_number": 4,
+        "name": "Collateral & LTV Check",
+        "description": "Evaluate independent property valuation and apply statutory/internal LTV cap to determine maximum loan."
+      },
+      {
+        "step_number": 5,
+        "name": "Rule & Policy Evaluation",
+        "description": "Execute deterministic policy rules (age, score, DTI, LTV, employer category). Flag exceptions for senior credit committee."
+      },
+      {
+        "step_number": 6,
+        "name": "Draft Credit Memo",
+        "description": "Generate structured credit appraisal memo citing specific rule outcomes, verified figures, and conditions precedent."
+      }
+    ]
+  },
+  {
+    "id": "proc.kyc_onboarding",
+    "name": "Customer Due Diligence & KYC Onboarding",
+    "category": "compliance",
+    "description": "Regulatory process for onboarding customer accounts and verifying beneficial ownership.",
+    "steps": [
+      {
+        "step_number": 1,
+        "name": "Document Collection",
+        "description": "Obtain officially valid documents (OVD) for identity and permanent address proof."
+      },
+      {
+        "step_number": 2,
+        "name": "Screening & Verification",
+        "description": "Screen applicant names against sanctions lists, PEP databases, and negative profiles."
+      },
+      {
+        "step_number": 3,
+        "name": "Risk Categorization",
+        "description": "Assign customer risk rating (Low, Medium, High) based on jurisdiction, profession, and turnover."
+      },
+      {
+        "step_number": 4,
+        "name": "Periodic Review Scheduling",
+        "description": "Establish schedule for customer due diligence refresh (e.g., 2 years for High risk, 8-10 years for Low risk)."
+      }
+    ]
+  },
+  {
+    "id": "proc.iracp_npa_management",
+    "name": "Stressed Asset Management & IRACP Resolution Workflow",
+    "category": "credit_risk",
+    "description": "End-to-end operational protocol for monitoring delinquency, provisioning capital, and executing legal recovery under RBI guidelines.",
+    "steps": [
+      {
+        "step_number": 1,
+        "name": "Early Warning & SMA Tagging",
+        "description": "Daily automated batch classification into SMA-0 (1-30 DPD), SMA-1 (31-60 DPD), and SMA-2 (61-90 DPD). Issue cure notices to borrower."
+      },
+      {
+        "step_number": 2,
+        "name": "NPA Tagging & Interest Derecognition",
+        "description": "Upon crossing 90 DPD, stop recognizing interest on accrual basis. Reverse unrealized accrued interest from profit and loss account."
+      },
+      {
+        "step_number": 3,
+        "name": "Regulatory Provisioning Allocation",
+        "description": "Allocate minimum 15% provision on secured substandard assets, 25% on unsecured, and update Risk-Weighted Asset reserves."
+      },
+      {
+        "step_number": 4,
+        "name": "Resolution Plan Formulation",
+        "description": "30-day review period to structure resolution plan, bilateral restructuring, or debt consolidation before legal escalation."
+      },
+      {
+        "step_number": 5,
+        "name": "Enforcement & Legal Recovery",
+        "description": "Serve SARFAESI Section 13(2) 60-day demand notice. If unpaid, initiate Section 13(4) physical possession or file insolvency petition at NCLT."
+      }
+    ]
+  },
+  {
+    "id": "proc.sme_working_capital_sanction",
+    "name": "MSME Working Capital Appraisal & Nayak MPBF Workflow",
+    "category": "commercial_credit",
+    "description": "Standardized underwriting assessment for granting fund-based cash credit limits to MSME industrial and trading enterprises.",
+    "steps": [
+      {
+        "step_number": 1,
+        "name": "Financial Intake & Churn Analysis",
+        "description": "Collect 3-year audited financials, GST returns, and 12-month operational bank statements. Verify sales churn through primary account."
+      },
+      {
+        "step_number": 2,
+        "name": "Turnover Validation & Nayak Assessment",
+        "description": "Verify projected turnover reasonableness. Calculate 25% Working Capital Requirement, 5% borrower margin, and 20% MPBF limit."
+      },
+      {
+        "step_number": 3,
+        "name": "Drawing Power (DP) Formulation",
+        "description": "Set monthly Drawing Power rules: Paid Stock minus 25% margin plus eligible Book Debts (< 90 days) minus 30% margin."
+      },
+      {
+        "step_number": 4,
+        "name": "Covenant & Benchmark Validation",
+        "description": "Ensure term debt DSCR exceeds 1.20x and Current Ratio is above 1.25x before credit sanction."
+      },
+      {
+        "step_number": 5,
+        "name": "Sanction Memo & Charge Creation",
+        "description": "Issue sanction letter, execute hypothecation of current assets, and file ROC / CERSAI charge within statutory timelines."
+      }
+    ]
+  },
+  {
+    "id": "proc.digital_lending_origination",
+    "name": "Digital Lending Onboarding & Direct Disbursal Workflow",
+    "category": "digital_lending",
+    "description": "Compliant workflow for originating unsecured personal or merchant digital loans under RBI Digital Lending Guidelines.",
+    "steps": [
+      {
+        "step_number": 1,
+        "name": "Digital Intake & Identity Verification",
+        "description": "Capture customer application through Regulated Entity/LSP app. Execute Aadhaar OTP or CKYC retrieval with biometric validation."
+      },
+      {
+        "step_number": 2,
+        "name": "Automated Bureau Scrub & Score Filter",
+        "description": "Real-time API pull from CIBIL/Experian. Confirm bureau score >= 700 and zero DPD > 30 in preceding 6 months."
+      },
+      {
+        "step_number": 3,
+        "name": "Key Fact Statement (KFS) Issuance",
+        "description": "Present mandatory standardized KFS displaying transparent Annual Percentage Rate (APR), EMI schedule, and all fees."
+      },
+      {
+        "step_number": 4,
+        "name": "Cooling-Off Agreement & e-Sign",
+        "description": "Obtain Aadhaar e-Sign on loan contract with explicit 3-day look-up period allowing penalty-free exit."
+      },
+      {
+        "step_number": 5,
+        "name": "Direct Account Disbursement",
+        "description": "Trigger automated direct credit to borrower verified bank account via NEFT/IMPS with zero pass-through via LSP accounts."
+      }
+    ]
+  }
+]

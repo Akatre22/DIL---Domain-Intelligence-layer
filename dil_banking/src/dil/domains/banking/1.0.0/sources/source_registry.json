@@ -1,0 +1,137 @@
+[
+  {
+    "source_id": "SRC-RBI-DOR-LENDING-HOUSING",
+    "name": "RBI Master Direction – Housing Finance",
+    "publisher": "Reserve Bank of India (RBI)",
+    "jurisdiction": "india",
+    "document_ref": "RBI/2020-21/73 DOR.No.BP.BC.24/21.06.001/2020-21",
+    "last_reviewed_date": "2026-10-01",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-RBI-HFC-DIRECTIONS-2025",
+    "name": "Reserve Bank of India (Housing Finance Companies) Directions, 2025",
+    "publisher": "Reserve Bank of India (RBI)",
+    "jurisdiction": "india",
+    "document_ref": "RBI/2024-25/DOR.HFC.DIR.01/2025",
+    "last_reviewed_date": "2026-01-15",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-RBI-FIDD-PSL-2025",
+    "name": "RBI Master Directions – Priority Sector Lending (PSL) – Targets and Classification",
+    "publisher": "Reserve Bank of India (RBI)",
+    "jurisdiction": "india",
+    "document_ref": "RBI/FIDD/2020-21/72 Master Direction FIDD.CO.Plan.BC.5/04.09.01/2020-21 (Updated 2025)",
+    "last_reviewed_date": "2026-02-10",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-RBI-DOR-IRACP-2023",
+    "name": "RBI Master Circular - Prudential Norms on Income Recognition, Asset Classification and Provisioning pertaining to Advances (IRACP)",
+    "publisher": "Reserve Bank of India (RBI)",
+    "jurisdiction": "india",
+    "document_ref": "RBI/2023-24/06 DOR.STR.REC.3/21.04.048/2023-24",
+    "last_reviewed_date": "2026-04-01",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-RBI-DOR-DIGITAL-LENDING-2022",
+    "name": "Guidelines on Digital Lending - Direct Disbursals, KFS and Borrower Protection",
+    "publisher": "Reserve Bank of India (RBI)",
+    "jurisdiction": "india",
+    "document_ref": "RBI/2022-23/111 DOR.CRE.REC.66/21.07.001/2022-23",
+    "last_reviewed_date": "2026-09-02",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-RBI-DOR-KYC-2016",
+    "name": "Master Direction - Know Your Customer (KYC) Direction, 2016 (Updated)",
+    "publisher": "Reserve Bank of India (RBI)",
+    "jurisdiction": "india",
+    "document_ref": "RBI/DBR/2015-16/18 Master Direction DBR.AML.BC.No.81/14.01.001/2015-16",
+    "last_reviewed_date": "2026-01-04",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-RBI-FED-ECB-2019",
+    "name": "Master Direction - External Commercial Borrowings, Trade Credits and Structured Obligations",
+    "publisher": "Reserve Bank of India (RBI)",
+    "jurisdiction": "india",
+    "document_ref": "RBI/FED/2018-19/67 FED Master Direction No.5/2018-19",
+    "last_reviewed_date": "2026-03-26",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-RBI-CEPC-OMBUDSMAN-2021",
+    "name": "Reserve Bank - Integrated Ombudsman Scheme, 2021 (RB-IOS 2021)",
+    "publisher": "Reserve Bank of India (RBI)",
+    "jurisdiction": "india",
+    "document_ref": "RBI/2021-22/126 CEPD.PR.No.1965/13.01.001/2021-22",
+    "last_reviewed_date": "2026-11-12",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-RBI-NAYAK-MSME",
+    "name": "Turnover Method for Working Capital Assessment of MSMEs (P.R. Nayak Committee Guidelines)",
+    "publisher": "Reserve Bank of India (RBI)",
+    "jurisdiction": "india",
+    "document_ref": "RPCD.No.PLNFS.BC.99/06.02.31/92-93 & Master Circular on MSME Lending",
+    "last_reviewed_date": "2026-07-01",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-DICGC-ACT-1961",
+    "name": "Deposit Insurance and Credit Guarantee Corporation Act, 1961 (Deposit Insurance Scheme ₹5 Lakh Cover)",
+    "publisher": "Deposit Insurance and Credit Guarantee Corporation (DICGC)",
+    "jurisdiction": "india",
+    "document_ref": "DICGC Amendment Act 2021",
+    "last_reviewed_date": "2026-08-01",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-BASEL-RETAIL-GUIDELINES",
+    "name": "Basel Framework - Retail Portfolio Risk Management & Capital Adequacy",
+    "publisher": "Basel Committee on Banking Supervision (BCBS)",
+    "jurisdiction": "global",
+    "document_ref": "BCBS-CRE-20",
+    "last_reviewed_date": "2026-06-15",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-GLOBAL-CREDIT-STANDARDS",
+    "name": "Prudential Standards for Residential Mortgage & Commercial Lending",
+    "publisher": "DIL Regulatory Editorial Board",
+    "jurisdiction": "global",
+    "document_ref": "DIL-REF-MORTGAGE-2026",
+    "last_reviewed_date": "2026-09-10",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-IBA-UNDERWRITING-GUIDELINES",
+    "name": "Model Retail Lending Policy & Bureau Norms",
+    "publisher": "Indian Banks' Association (IBA)",
+    "jurisdiction": "india",
+    "document_ref": "IBA-CIRC-RETAIL-CREDIT-2025",
+    "last_reviewed_date": "2026-08-01",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-INCOME-TAX-ACT-RULE-114B",
+    "name": "Income-tax Rules, 1962 (Rule 114B - Quoting of PAN & Section 194A TDS on Interest)",
+    "publisher": "Central Board of Direct Taxes (CBDT), India",
+    "jurisdiction": "india",
+    "document_ref": "IT-RULE-114B-NOTIFICATION",
+    "last_reviewed_date": "2026-05-20",
+    "status": "active"
+  },
+  {
+    "source_id": "SRC-ICC-UCP-600",
+    "name": "Uniform Customs and Practice for Documentary Credits (UCP 600)",
+    "publisher": "International Chamber of Commerce (ICC)",
+    "jurisdiction": "global",
+    "document_ref": "ICC Publication No. 600",
+    "last_reviewed_date": "2026-01-01",
+    "status": "active"
+  }
+]

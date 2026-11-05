@@ -1,0 +1,756 @@
+[
+  {
+    "id": "account.savings",
+    "name": "Savings account",
+    "category": "account_type",
+    "definition": "A deposit account generally intended for individuals to hold money while earning interest, subject to product terms.",
+    "key_points": [
+      "Pays interest on eligible daily or average balances",
+      "Withdrawals and transaction features depend on the bank and account variant",
+      "Fees, minimum balance rules, and limits are product-specific"
+    ],
+    "aliases": [
+      "casa ratio",
+      "sb account",
+      "savings account",
+      "savings bank account",
+      "casa",
+      "saving account",
+      "savings"
+    ],
+    "related": [
+      "account.current",
+      "deposit.interest"
+    ],
+    "caveat": "Exact rates, fees, limits and eligibility vary by institution, product and jurisdiction.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "account.current",
+    "name": "Current account",
+    "category": "account_type",
+    "definition": "A transaction-oriented deposit account commonly used by businesses and traders with frequent payment and collection needs.",
+    "key_points": [
+      "Designed for high-frequency transactions with no limit on number of debits/credits",
+      "May include overdraft or cash-management facilities subject to credit approval",
+      "Typically does not earn interest in most jurisdictions"
+    ],
+    "aliases": [
+      "casa",
+      "business current account",
+      "current account",
+      "checking account"
+    ],
+    "related": [
+      "account.savings",
+      "payment.transfer"
+    ],
+    "caveat": "Features, charges, interest and permitted customer types vary by bank and jurisdiction.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "deposit.interest",
+    "name": "Deposit interest",
+    "category": "deposit_concept",
+    "definition": "The compensation a deposit-taking institution pays on eligible deposit balances according to agreed rates and calculation methods.",
+    "key_points": [
+      "Can be fixed or variable depending on the product terms",
+      "Calculation frequency (daily balance) and compounding rules (quarterly/monthly) affect yields",
+      "Advertised rates may be conditional on tenure or minimum balance"
+    ],
+    "aliases": [
+      "deposit interest",
+      "interest on deposits",
+      "savings interest",
+      "interest rate"
+    ],
+    "related": [
+      "account.savings",
+      "deposit.fixed"
+    ],
+    "caveat": "Do not assume a specific rate or compounding convention without reference to product terms.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "deposit.fixed",
+    "name": "Fixed-term deposit",
+    "category": "deposit_concept",
+    "definition": "A deposit placed for an agreed term, often at a specified interest rate or formula, with structured access conditions.",
+    "key_points": [
+      "Fixed maturity date or tenure ranging from days to years",
+      "Premature withdrawal may incur penalty and interest rate reduction",
+      "Interest may be paid periodically or compounded to maturity"
+    ],
+    "aliases": [
+      "fcnr",
+      "time deposit",
+      "term deposit",
+      "fcnr(b)",
+      "certificate of deposit",
+      "fd",
+      "fcnr deposit",
+      "fixed deposit"
+    ],
+    "related": [
+      "deposit.interest",
+      "account.savings"
+    ],
+    "caveat": "Terminology and early break penalties differ across institutions and countries.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "loan.home",
+    "name": "Home loan",
+    "category": "lending",
+    "definition": "A credit facility provided to finance the purchase, construction, or improvement of residential property, secured by the property.",
+    "key_points": [
+      "Repayment occurs over an agreed tenure through scheduled Equated Monthly Instalments (EMIs)",
+      "The underlying residential property serves as primary collateral (mortgage)",
+      "Sanction depends on lender policy, borrower income, credit score, and property valuation"
+    ],
+    "aliases": [
+      "home loan",
+      "housing loan",
+      "mortgage",
+      "housing finance"
+    ],
+    "related": [
+      "loan.emi",
+      "loan.ltv",
+      "loan.dti",
+      "loan.eligibility",
+      "collateral"
+    ],
+    "caveat": "Lending criteria, interest types (fixed/floating), and statutory caps vary by lender and regulatory jurisdiction.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "loan.eligibility",
+    "name": "Loan eligibility",
+    "category": "lending_decision",
+    "definition": "The formal underwriting assessment determining whether a borrower qualifies for loan sanction and up to what amount.",
+    "key_points": [
+      "Assessed against monthly disposable income, existing liabilities, credit history, and age",
+      "Constrained by regulatory caps on LTV and DTI / FOIR",
+      "Requires verification of stable employment or business cash flows"
+    ],
+    "aliases": [
+      "loan eligibility",
+      "borrowing capacity",
+      "eligibility criteria",
+      "borrowing limit"
+    ],
+    "related": [
+      "loan.home",
+      "loan.dti",
+      "credit.score",
+      "loan.emi"
+    ],
+    "caveat": "Eligibility rules are institution-specific and never constitute an automatic loan approval guarantee.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "credit.score",
+    "name": "Credit score",
+    "category": "credit_risk",
+    "definition": "A numerical expression derived from credit report analysis representing the creditworthiness and default likelihood of an individual.",
+    "key_points": [
+      "Calculated by licensed credit bureaus from historical repayment behavior and credit utilization",
+      "Higher scores indicate lower historical default risk and qualify for better loan terms",
+      "Recent defaults, late payments, high credit utilization, and frequent inquiries reduce the score"
+    ],
+    "aliases": [
+      "credit score",
+      "bureau score",
+      "cibil score",
+      "credit rating"
+    ],
+    "related": [
+      "loan.eligibility",
+      "risk.credit"
+    ],
+    "caveat": "Cutoffs and risk band calibrations differ across lenders and regional bureau models.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "loan.dti",
+    "name": "Debt-to-Income (DTI / FOIR)",
+    "category": "credit_risk",
+    "definition": "A risk metric comparing an applicant's total recurring debt obligations to their gross or net monthly income.",
+    "key_points": [
+      "Used to ensure borrowers retain sufficient uncommitted income for living expenses",
+      "Commonly benchmarked in banking between 40% to 55% for retail lending",
+      "Known as FOIR (Fixed Obligation to Income Ratio) in Indian banking practice"
+    ],
+    "aliases": [
+      "dti",
+      "debt to income",
+      "foir",
+      "fixed obligation to income ratio"
+    ],
+    "related": [
+      "loan.eligibility",
+      "loan.emi"
+    ],
+    "caveat": "Permitted thresholds depend on borrower income tier, employer profile, and lender risk appetite.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "loan.ltv",
+    "name": "Loan-to-Value (LTV) ratio",
+    "category": "credit_risk",
+    "definition": "The proportion of loan principal relative to the appraised market value of the purchased collateral asset.",
+    "key_points": [
+      "Determines the borrower's minimum required equity down payment (margin money)",
+      "Higher LTV implies greater lender credit risk in case of foreclosure",
+      "Central banks frequently mandate statutory maximum LTV ceilings to prevent speculative bubbles"
+    ],
+    "aliases": [
+      "ltv",
+      "loan to value",
+      "loan to value ratio",
+      "margin money"
+    ],
+    "related": [
+      "loan.home",
+      "collateral",
+      "risk.credit"
+    ],
+    "caveat": "Central bank ceilings and lender appraisal discounts dictate maximum LTV limits.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "loan.emi",
+    "name": "Equated Monthly Instalment (EMI)",
+    "category": "lending",
+    "definition": "The fixed monthly sum paid by a borrower comprising amortized principal and accrued interest over the loan tenure.",
+    "key_points": [
+      "Computed via standard amortization formula: E = P * r * (1 + r)^n / ((1 + r)^n - 1)",
+      "In early tenure years, interest constitutes the major proportion of EMI; principal dominates later",
+      "Changes in benchmark interest rates may alter tenure or EMI on floating rate loans"
+    ],
+    "aliases": [
+      "emi",
+      "monthly instalment",
+      "monthly payment",
+      "loan emi"
+    ],
+    "related": [
+      "loan.home",
+      "deposit.interest",
+      "loan.dti"
+    ],
+    "caveat": "Actual amortisation schedules depend on compounding frequency, rests (daily/monthly), and rate reset dates.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "collateral",
+    "name": "Collateral security",
+    "category": "credit_risk",
+    "definition": "An asset pledged by a borrower to secure a loan, which the lender may repossess and liquidate upon default.",
+    "key_points": [
+      "Mitigates credit loss given default (LGD)",
+      "Subject to legal title verification, search reports, and independent valuation",
+      "May be primary collateral (the asset financed) or secondary collateral"
+    ],
+    "aliases": [
+      "security interest",
+      "sarfaesi",
+      "enforcement of security",
+      "security",
+      "collateral",
+      "sarfaesi act",
+      "pledged asset",
+      "mortgage property"
+    ],
+    "related": [
+      "loan.home",
+      "loan.ltv"
+    ],
+    "caveat": "Enforceability of security is governed by local property and insolvency legislation.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "kyc",
+    "name": "Know Your Customer (KYC)",
+    "category": "compliance",
+    "definition": "The mandatory compliance framework for identifying and verifying customer identity before entering a business relationship.",
+    "key_points": [
+      "Involves collecting officially valid identity and address documents (OVD)",
+      "Includes customer risk categorization (low, medium, high risk)",
+      "Mandates periodic customer due diligence (CDD) refresh based on risk category"
+    ],
+    "aliases": [
+      "kyc",
+      "know your customer",
+      "customer due diligence",
+      "identity verification"
+    ],
+    "related": [
+      "aml",
+      "customer"
+    ],
+    "caveat": "Document requirements and digital verification standards are strictly regulated by national financial authorities.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "aml",
+    "name": "Anti-Money Laundering (AML)",
+    "category": "compliance",
+    "definition": "The legal and regulatory system designed to detect and prevent financial transactions related to criminal or terrorist activities.",
+    "key_points": [
+      "Requires ongoing transaction monitoring and threshold-based reporting (e.g. Cash Transaction Reports)",
+      "Mandates filing of Suspicious Transaction Reports (STR / SAR) to national Financial Intelligence Units",
+      "Prohibits tipping off customers under investigation"
+    ],
+    "aliases": [
+      "anti money laundering",
+      "financial crime",
+      "suspicious transaction report",
+      "ctr",
+      "fiu-ind",
+      "aml",
+      "cft",
+      "fiu",
+      "str"
+    ],
+    "related": [
+      "kyc",
+      "customer"
+    ],
+    "caveat": "Tipping-off rules prohibit disclosing suspicion or reporting to the account holder.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "payment.transfer",
+    "name": "Fund transfer & payments",
+    "category": "payments",
+    "definition": "Electronic systems facilitating the movement of money between bank accounts within or across financial institutions.",
+    "key_points": [
+      "Settled either in real-time or in batches via central clearing networks",
+      "May involve transaction limits, cutoff times, and processing fees",
+      "Includes domestic rails (NEFT, RTGS, IMPS, UPI, FedNow, SEPA) and international messaging (SWIFT)"
+    ],
+    "aliases": [
+      "wire transfer",
+      "payment",
+      "funds transfer",
+      "interbank transfer"
+    ],
+    "related": [
+      "payment.settlement",
+      "account.current",
+      "account.savings"
+    ],
+    "caveat": "Speed, charges, and settlement finality vary according to the selected payment rail.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "payment.settlement",
+    "name": "Payment settlement",
+    "category": "payments",
+    "definition": "The unconditional discharging of obligations between two financial institutions upon the completion of a transaction.",
+    "key_points": [
+      "Can occur on a gross basis (RTGS) or net clearing basis",
+      "Determines when transferred funds become irrevocable",
+      "Regulated by central bank settlement systems"
+    ],
+    "aliases": [
+      "settlement",
+      "clearing and settlement",
+      "rtgs settlement"
+    ],
+    "related": [
+      "payment.transfer"
+    ],
+    "caveat": "Rules governing settlement finality depend on the system rules of the clearing entity.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "customer",
+    "name": "Banking customer",
+    "category": "core_entity",
+    "definition": "An individual, corporate entity, trust, or association maintaining accounts or credit facilities with a financial institution.",
+    "key_points": [
+      "Must undergo KYC and AML screening before onboarding",
+      "Classified by legal structure: individual, sole proprietor, partnership, private/public company",
+      "Customer data is protected under statutory privacy and bank secrecy obligations"
+    ],
+    "aliases": [
+      "customer",
+      "client",
+      "borrower",
+      "depositor",
+      "account holder"
+    ],
+    "related": [
+      "kyc",
+      "account.savings",
+      "loan.home"
+    ],
+    "caveat": "Confidential customer data cannot be shared across unauthorized systems or external LLMs without masking.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "risk.credit",
+    "name": "Credit risk",
+    "category": "risk_management",
+    "definition": "The probability of loss resulting from a borrower's failure to repay a loan or meet contractual obligations.",
+    "key_points": [
+      "Managed through underwriting limits, collateral security, risk-based pricing, and provisioning",
+      "Classified into stages or grades based on delinquency days past due (DPD)",
+      "Loans overdue beyond 90 days are standardly categorized as Non-Performing Assets (NPAs)"
+    ],
+    "aliases": [
+      "credit risk",
+      "default risk",
+      "counterparty risk",
+      "non-performing asset",
+      "npa"
+    ],
+    "related": [
+      "loan.eligibility",
+      "credit.score",
+      "collateral"
+    ],
+    "caveat": "Provisioning norms and asset classification triggers follow domestic banking regulator directives.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "credit.iracp_classification",
+    "name": "IRACP Asset Classification & Provisioning",
+    "category": "credit_risk",
+    "definition": "The regulatory framework established by RBI for recognizing interest income and classifying loans into Standard, SMA, Substandard, Doubtful, and Loss categories based on overdue Days Past Due (DPD).",
+    "key_points": [
+      "SMA-0: 1 to 30 days overdue (incipient stress)",
+      "SMA-1: 31 to 60 days overdue",
+      "SMA-2: 61 to 90 days overdue",
+      "NPA: Overdue > 90 days",
+      "Substandard asset provisioning: 15% (secured) / 25% (unsecured)",
+      "Doubtful 1 (up to 1 yr): 25% secured; Doubtful 2 (1-3 yrs): 40% secured; Doubtful 3 (>3 yrs): 100% provision",
+      "Loss assets: 100% provision or immediate write-off"
+    ],
+    "aliases": [
+      "npa classification",
+      "provisioning norms",
+      "sma classification",
+      "sarfaesi",
+      "iracp",
+      "special mention account",
+      "sma",
+      "gross npa",
+      "net npa",
+      "asset classification",
+      "gnpa",
+      "sarfaesi act",
+      "bad loan categorization",
+      "arc",
+      "npa",
+      "nnpa",
+      "asset reconstruction company"
+    ],
+    "related": [
+      "risk.credit",
+      "loan.eligibility"
+    ],
+    "caveat": "Classification must be calculated on an account-level DPD basis without subjective deferral.",
+    "jurisdiction": "india"
+  },
+  {
+    "id": "credit.sme_working_capital_nayak",
+    "name": "Nayak Committee Turnover Method for MSME Working Capital",
+    "category": "commercial_credit",
+    "definition": "A simplified working capital assessment methodology formulated by RBI for MSMEs with fund-based working capital requirements up to ₹5 Crore / ₹10 Crore based on projected annual turnover.",
+    "key_points": [
+      "Total Working Capital Requirement (WCR) is assessed at 25% of projected annual sales/turnover",
+      "Borrower must bring in a minimum margin of 5% of turnover as Net Working Capital (NWC)",
+      "Maximum Permissible Bank Finance (MPBF) is capped at 20% of projected annual turnover",
+      "Eliminates exhaustive balance sheet ratios for micro and small industrial units"
+    ],
+    "aliases": [
+      "nayak method",
+      "turnover method",
+      "sme working capital",
+      "mpbf",
+      "working capital assessment"
+    ],
+    "related": [
+      "loan.eligibility",
+      "commercial.working_capital"
+    ],
+    "caveat": "Turnover projections must be validated against GST filings and historical banking churn before applying the 20% formula.",
+    "jurisdiction": "india"
+  },
+  {
+    "id": "credit.dscr",
+    "name": "Debt Service Coverage Ratio (DSCR)",
+    "category": "commercial_credit",
+    "definition": "A fundamental financial health ratio used in corporate and term loan underwriting measuring the borrower capacity to service term debt principal and interest out of operating cash flows.",
+    "key_points": [
+      "Formula: DSCR = (Profit After Tax + Depreciation + Term Loan Interest) / (Term Loan Principal Installment + Interest)",
+      "A DSCR >= 1.50x to 2.00x is considered strong and prime for commercial lending",
+      "A DSCR < 1.20x breaches standard underwriting risk appetite and requires senior sanction",
+      "A DSCR < 1.00x indicates operating cash deficit where company cannot service term obligations from earnings"
+    ],
+    "aliases": [
+      "dscr",
+      "debt service coverage",
+      "interest service coverage",
+      "cash flow coverage"
+    ],
+    "related": [
+      "loan.eligibility",
+      "risk.credit"
+    ],
+    "caveat": "Depreciation must be added back only if non-cash; unhedged forex fluctuations must be stressed.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "digital_lending.kfs_apr",
+    "name": "Digital Lending Key Fact Statement (KFS) & APR Mandate",
+    "category": "digital_lending",
+    "definition": "Mandatory borrower protection disclosures codified by RBI requiring Regulated Entities to present an itemized one-page summary with an all-inclusive Annual Percentage Rate prior to executing any digital loan contract.",
+    "key_points": [
+      "APR must incorporate interest rate, processing fees, insurance premiums, verification charges, and third-party fees",
+      "No undisclosed, hidden, or pass-through charges can be levied on the borrower",
+      "Loan disbursals must go directly into the borrower bank account (no LSP intermediary pool accounts)",
+      "Mandatory cooling-off period of at least 3 days for loans with tenure >= 7 days (1 day for tenure < 7 days)"
+    ],
+    "aliases": [
+      "kfs",
+      "key fact statement",
+      "apr disclosure",
+      "digital lending guidelines",
+      "cooling off period"
+    ],
+    "related": [
+      "loan.eligibility",
+      "compliance"
+    ],
+    "caveat": "Failure to provide standardized KFS or levy of unapproved LSP fees is a direct regulatory breach under RBI Ombudsman rules.",
+    "jurisdiction": "india"
+  },
+  {
+    "id": "trade_finance.letter_of_credit",
+    "name": "Letter of Credit (LC) & UCP 600 Framework",
+    "category": "trade_finance",
+    "definition": "A binding documentary undertaking issued by an issuing bank on behalf of an applicant (buyer) guaranteeing payment to a beneficiary (seller/exporter) against delivery of conforming shipping and trade documents under ICC UCP 600 rules.",
+    "key_points": [
+      "Governed internationally by ICC Uniform Customs and Practice for Documentary Credits (UCP 600)",
+      "Banks deal in documents and not in underlying physical goods (Autonomy Principle)",
+      "Strict compliance principle: Documents must match LC conditions precisely without discrepancies",
+      "Types include Irrevocable, Confirmed, Transferable, Revolving, and Standby (SBLC)"
+    ],
+    "aliases": [
+      "letter of credit",
+      "lc",
+      "documentary credit",
+      "ucp 600",
+      "commercial lc"
+    ],
+    "related": [
+      "payment.transfer",
+      "collateral"
+    ],
+    "caveat": "Any documentary discrepancy gives the issuing bank the legal right to refuse payment within 5 banking days.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "trade_finance.bank_guarantee",
+    "name": "Bank Guarantee (Financial & Performance BG)",
+    "category": "trade_finance",
+    "definition": "An irrevocable tripartite legal contract where a guarantor bank pledges to pay a specified financial sum to a beneficiary if the applicant customer defaults on contractual or financial commitments.",
+    "key_points": [
+      "Financial Guarantee: Guarantees payment of a pure monetary liability or debt",
+      "Performance Guarantee: Protects project owners against failure to perform construction, supply, or turnkey milestones",
+      "Bid Bond Guarantee: Assures tender issuers that selected bidder will execute the contract if awarded",
+      "Invoking bank guarantees requires meeting exact documentary terms; courts rarely grant injunctions against unconditional BGs"
+    ],
+    "aliases": [
+      "bank guarantee",
+      "bg",
+      "performance guarantee",
+      "financial guarantee",
+      "bid bond"
+    ],
+    "related": [
+      "collateral",
+      "credit.iracp_classification"
+    ],
+    "caveat": "Guarantee commitments are non-fund-based credit facilities that convert into fund-based liabilities upon invocation.",
+    "jurisdiction": "global"
+  },
+  {
+    "id": "compliance.kyc_ovd",
+    "name": "Customer Due Diligence & Officially Valid Documents (OVD)",
+    "category": "compliance",
+    "definition": "The statutory customer identification procedure mandated by RBI KYC Directions 2016 requiring verification of natural and legal persons using authorized identity documents and ongoing risk-based review.",
+    "key_points": [
+      "6 Officially Valid Documents (OVDs): Passport, Driving Licence, Proof of possession of Aadhaar number, Voter ID Card, NREGA Job Card, and NPR Letter",
+      "Quoting of PAN or Form 60 is mandatory for opening bank accounts and high-value cash transactions (> ₹50,000)",
+      "Risk-categorized periodic KYC refresh: High risk = every 2 years; Medium risk = every 8 years; Low risk = every 10 years",
+      "Centralized CKYC identifier prevents duplicative customer onboarding across Indian financial institutions"
+    ],
+    "aliases": [
+      "ovd",
+      "kyc documents",
+      "customer due diligence",
+      "ckyc",
+      "re-kyc",
+      "identity proof"
+    ],
+    "related": [
+      "kyc",
+      "aml"
+    ],
+    "caveat": "Aadhaar numbers must be redacted/masked (first 8 digits hidden) unless physical offline XML/QR verification is performed.",
+    "jurisdiction": "india"
+  },
+  {
+    "id": "deposits.dicgc_protection",
+    "name": "DICGC Deposit Insurance Protection Scheme",
+    "category": "deposits",
+    "definition": "Statutory insurance coverage provided by Deposit Insurance and Credit Guarantee Corporation (a wholly owned RBI subsidiary) protecting depositor balances in Indian banks up to ₹5,00,000.",
+    "key_points": [
+      "Insurance limit is ₹5,00,000 per depositor per insured bank (covering both principal and interest across all branches)",
+      "Applies across savings, current, fixed, and recurring deposit accounts held in the same right and same capacity",
+      "Deposits in different insured banks have independent ₹5,00,000 limits each",
+      "Under DICGC Amendment Act 2021, depositors receive payments within 90 days if a bank is placed under RBI moratorium"
+    ],
+    "aliases": [
+      "dicgc",
+      "deposit insurance",
+      "deposit guarantee",
+      "5 lakh deposit cover"
+    ],
+    "related": [
+      "account.savings",
+      "account.current",
+      "deposit.fixed"
+    ],
+    "caveat": "Deposits in Primary Agricultural Credit Societies (PACS) or cooperative societies not covered under BR Act do not have DICGC insurance.",
+    "jurisdiction": "india"
+  },
+  {
+    "id": "regulatory.psl_mandate",
+    "name": "Priority Sector Lending (PSL) Statutory Targets",
+    "category": "regulatory_compliance",
+    "definition": "Statutory lending quotas mandated by the RBI requiring scheduled commercial banks to direct a specific minimum percentage of credit to underserved economic sectors.",
+    "key_points": [
+      "Overall Target for Domestic Commercial Banks: 40% of Adjusted Net Bank Credit (ANBC) or CEOBE (whichever is higher)",
+      "Agriculture Sub-Target: 18% of ANBC (minimum 10% directed towards Small & Marginal Farmers)",
+      "Micro-Enterprises Sub-Target: 7.5% of ANBC",
+      "Weaker Sections: 12% of ANBC",
+      "Shortfalls in PSL achievement are compulsorily allocated to the Rural Infrastructure Development Fund (RIDF) at penalized interest yields"
+    ],
+    "aliases": [
+      "priority sector lending",
+      "psl",
+      "anbc",
+      "agriculture lending quota",
+      "ridf contribution"
+    ],
+    "related": [
+      "loan.eligibility",
+      "credit.sme_working_capital_nayak"
+    ],
+    "caveat": "Banks with PSL surplus can monetize excess credits via market-traded Priority Sector Lending Certificates (PSLCs).",
+    "jurisdiction": "india"
+  },
+  {
+    "id": "capital_adequacy.crar",
+    "name": "Capital to Risk-Weighted Assets Ratio (CRAR / Basel III)",
+    "category": "capital_adequacy",
+    "definition": "The core prudential solvency metric measuring a financial institution capital reserves relative to its risk-weighted credit, market, and operational risk exposures.",
+    "key_points": [
+      "Formula: CRAR = (Tier 1 Capital + Tier 2 Capital) / Total Risk-Weighted Assets * 100",
+      "RBI Basel III requirement for Indian Commercial Banks is minimum 9.0% (plus 2.5% Capital Conservation Buffer)",
+      "Housing Finance Companies (HFCs) must maintain a minimum CRAR of 15% (Tier-1 minimum 10%) per RBI Directions 2025",
+      "Breaching minimum CRAR triggers RBI Prompt Corrective Action (PCA) framework restricting dividend payouts, branch expansion, and lending"
+    ],
+    "aliases": [
+      "crar",
+      "capital adequacy ratio",
+      "car",
+      "tier 1 capital",
+      "tier 2 capital",
+      "pca framework"
+    ],
+    "related": [
+      "risk.credit"
+    ],
+    "caveat": "Subordinated debt instruments count towards Tier-2 capital only up to 50% of Tier-1 capital and subject to progressive 5-year amortization.",
+    "jurisdiction": "india"
+  },
+  {
+    "id": "lending.gold_loan",
+    "name": "Gold Loan Lending Norms & LTV Cap",
+    "category": "retail_lending",
+    "definition": "Secured credit facility extended against the pledge of gold jewelry or ornaments to individuals for personal or agricultural purposes, governed by strict RBI valuation and margin caps.",
+    "key_points": [
+      "Maximum Loan-to-Value (LTV) ratio is capped by RBI at 75% for non-agricultural gold loans",
+      "Valuation must be determined using the average closing price of 22-carat gold over preceding 30 days published by IBJA",
+      "Bullet repayment option allowed for loans up to ₹2 Lakhs with maximum 12 months tenure",
+      "Lenders cannot accept gold coins weighing more than 50 grams or bullion/bars from retail borrowers"
+    ],
+    "aliases": [
+      "gold loan",
+      "loan against gold",
+      "gold ltv",
+      "pledge of gold",
+      "jewel loan"
+    ],
+    "related": [
+      "loan.ltv",
+      "collateral"
+    ],
+    "caveat": "Making charges, stone weights, and precious gems must be excluded from gold weight during official valuation.",
+    "jurisdiction": "india"
+  },
+  {
+    "id": "monetary.crr_slr",
+    "name": "Cash Reserve Ratio (CRR) & Statutory Liquidity Ratio (SLR)",
+    "category": "monetary_policy",
+    "definition": "Statutory reserve requirements mandated by RBI to control money supply and ensure banking liquidity.",
+    "key_points": [
+      "CRR is held with RBI in cash as a percentage of Net Demand and Time Liabilities (NDTL)",
+      "SLR is invested in sovereign G-Secs or gold",
+      "No interest is earned on CRR balances"
+    ],
+    "aliases": [
+      "crr",
+      "cash reserve ratio",
+      "slr",
+      "statutory liquidity ratio"
+    ],
+    "related": [
+      "risk.credit",
+      "account.savings"
+    ],
+    "caveat": "CRR and SLR default attracts statutory penal interest from RBI.",
+    "jurisdiction": "india"
+  },
+  {
+    "id": "forex.ecb",
+    "name": "External Commercial Borrowings (ECB)",
+    "category": "forex_finance",
+    "definition": "Commercial cross-border loans raised by eligible resident entities from recognized non-resident lenders under RBI FEMA regulations.",
+    "key_points": [
+      "Available under Automatic Route or Approval Route",
+      "Subject to Minimum Average Maturity Period (MAMP) of 3 to 5 years",
+      "All-in-cost ceiling benchmarked to SOFR + 500 bps"
+    ],
+    "aliases": [
+      "ecb",
+      "external commercial borrowings",
+      "external commercial borrowing",
+      "fema borrowings"
+    ],
+    "related": [
+      "risk.credit",
+      "trade_finance.letter_of_credit"
+    ],
+    "caveat": "Proceeds cannot be used for real estate investment or stock market speculation.",
+    "jurisdiction": "india"
+  }
+]

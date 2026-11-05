@@ -1,0 +1,3 @@
+recursive-include src/dil/domains *
+recursive-include src/dil/roles/predefined *
+

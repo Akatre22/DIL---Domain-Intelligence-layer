@@ -1,0 +1,33 @@
+{
+  "pack_id": "dil.banking",
+  "name": "Banking Domain Intelligence",
+  "version": "1.0.0",
+  "domain": "banking",
+  "publisher": "DIL Architecture Team",
+  "description": "Standardized banking domain intelligence: terminology, concepts, workflows, and deterministic rules with jurisdiction overlays.",
+  "jurisdictions": [
+    "global",
+    "india"
+  ],
+  "compatibility": {
+    "dil_sdk": ">=0.1.0,<1.0.0",
+    "schema_version": "1.0"
+  },
+  "assets": {
+    "terminology": "terminology.json",
+    "concepts": "concepts.json",
+    "relationships": "relationships.json",
+    "processes": "processes.json",
+    "rules": {
+      "general": "rules/general.json",
+      "india": "rules/india.json"
+    },
+    "sources": "sources/source_registry.json"
+  },
+  "release": {
+    "channel": "stable",
+    "status": "published",
+    "release_date": "2026-11-02"
+  }
+}
+

@@ -1,0 +1,11 @@
+{
+  "pack_id": "dil.banking",
+  "version": "1.0.0",
+  "format": "parquet",
+  "compression": "snappy",
+  "content_hashes": {
+    "terminology.parquet": "sha256:a076986b98fc1cedd2ac7f6b6577cf7d79033b868b99f98aa82e193d09628e0c",
+    "concepts.parquet": "sha256:451a8ef9afcc701e4932cbdaf73dd4a9973fecea2a856e109af5bbe5ffb308a7",
+    "rules.parquet": "sha256:c9d3e1e58f7ebde58b7d038605b52284e160e49a9895d210fe9a8e7dc9aca1d2"
+  }
+}

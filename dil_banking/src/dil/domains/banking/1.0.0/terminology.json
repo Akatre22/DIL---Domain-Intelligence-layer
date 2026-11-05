@@ -1,0 +1,539 @@
+[
+  {
+    "term": "EMI",
+    "expansion": "Equated Monthly Instalment",
+    "category": "lending",
+    "definition": "A fixed payment amount made by a borrower to a lender at a specified date each calendar month, combining principal and interest.",
+    "synonyms": [
+      "equated monthly installment",
+      "monthly payment",
+      "loan installment",
+      "kist",
+      "hafta"
+    ]
+  },
+  {
+    "term": "LTV",
+    "expansion": "Loan-to-Value Ratio",
+    "category": "lending_risk",
+    "definition": "The ratio of the loan amount to the appraised or purchase value of the underlying collateral asset, expressed as a percentage.",
+    "synonyms": [
+      "loan to value",
+      "ltv ratio",
+      "margin requirement"
+    ]
+  },
+  {
+    "term": "DTI",
+    "expansion": "Debt-to-Income Ratio",
+    "category": "affordability",
+    "definition": "The proportion of a borrower's gross or net monthly income committed to servicing recurring debt obligations.",
+    "synonyms": [
+      "debt to income",
+      "dti ratio"
+    ]
+  },
+  {
+    "term": "FOIR",
+    "expansion": "Fixed Obligation to Income Ratio",
+    "category": "affordability",
+    "definition": "An underwriting metric used by Indian banks indicating the percentage of a borrower's monthly income absorbed by mandatory fixed debts and rent.",
+    "synonyms": [
+      "fixed obligation to income",
+      "foir ratio",
+      "income obligation ratio"
+    ]
+  },
+  {
+    "term": "APR",
+    "expansion": "Annual Percentage Rate",
+    "category": "lending_compliance",
+    "definition": "The effective annual cost of credit expressed as a percentage, incorporating interest rate, processing charges, insurance, and statutory fees.",
+    "synonyms": [
+      "annual percentage rate",
+      "effective interest rate",
+      "all in cost of credit"
+    ]
+  },
+  {
+    "term": "KFS",
+    "expansion": "Key Fact Statement",
+    "category": "digital_lending",
+    "definition": "A standardized one-page disclosure document mandated by RBI to be given to borrowers before loan sanction, detailing APR, loan amount, and cooling-off terms.",
+    "synonyms": [
+      "key fact statement",
+      "cooling-off period",
+      "look-up period",
+      "loan disclosure sheet",
+      "kfs document",
+      "cooling off"
+    ]
+  },
+  {
+    "term": "CIBIL",
+    "expansion": "Credit Information Bureau (India) Limited",
+    "category": "credit_bureau",
+    "definition": "India's premier credit information bureau that tracks debt repayment track records and calculates credit scores ranging from 300 to 900.",
+    "synonyms": [
+      "cibil score",
+      "credit score",
+      "transunion cibil",
+      "bureau score"
+    ]
+  },
+  {
+    "term": "DPD",
+    "expansion": "Days Past Due",
+    "category": "credit_risk",
+    "definition": "The number of days an installment, principal, or interest payment remains unpaid after its formal payment due date.",
+    "synonyms": [
+      "days past due",
+      "overdue days",
+      "arrears age"
+    ]
+  },
+  {
+    "term": "SMA",
+    "expansion": "Special Mention Account",
+    "category": "credit_risk",
+    "definition": "An asset classification framework created by RBI to flag early stress in loan accounts before they slip into non-performing status (SMA-0: 1-30 DPD, SMA-1: 31-60 DPD, SMA-2: 61-90 DPD).",
+    "synonyms": [
+      "special mention account",
+      "incipient stress",
+      "early warning account"
+    ]
+  },
+  {
+    "term": "NPA",
+    "expansion": "Non-Performing Asset",
+    "category": "credit_risk",
+    "definition": "A loan advance where interest and/or installment of principal remains overdue for a period exceeding 90 days.",
+    "synonyms": [
+      "non performing asset",
+      "bad loan",
+      "defaulted loan"
+    ]
+  },
+  {
+    "term": "IRACP",
+    "expansion": "Income Recognition, Asset Classification and Provisioning",
+    "category": "regulatory_accounting",
+    "definition": "RBI's regulatory framework governing when banks can recognize interest income on advances and how much capital must be set aside as loan-loss provisions.",
+    "synonyms": [
+      "iracp norms",
+      "prudential provisioning norms",
+      "asset classification guidelines"
+    ]
+  },
+  {
+    "term": "GNPA",
+    "expansion": "Gross Non-Performing Assets",
+    "category": "credit_risk",
+    "definition": "The total monetary value of all loans classified as non-performing by a bank before subtracting impairment provisions.",
+    "synonyms": [
+      "gross npa",
+      "gross bad loans"
+    ]
+  },
+  {
+    "term": "NNPA",
+    "expansion": "Net Non-Performing Assets",
+    "category": "credit_risk",
+    "definition": "Gross NPAs minus cumulative loan loss provisions held by the bank, reflecting true unhedged credit risk.",
+    "synonyms": [
+      "net npa",
+      "net bad loans"
+    ]
+  },
+  {
+    "term": "PCR",
+    "expansion": "Provision Coverage Ratio",
+    "category": "credit_risk",
+    "definition": "The proportion of gross bad loans for which a bank has set aside capital provisions (Total Provisions / Gross NPAs * 100).",
+    "synonyms": [
+      "provision coverage ratio",
+      "pcr ratio"
+    ]
+  },
+  {
+    "term": "SARFAESI",
+    "expansion": "Securitisation and Reconstruction of Financial Assets and Enforcement of Security Interest Act",
+    "category": "recovery",
+    "definition": "An Indian statute enacted in 2002 that empowers banks and financial institutions to auction residential or commercial secured properties to recover NPAs without court intervention.",
+    "synonyms": [
+      "sarfaesi act",
+      "security enforcement act"
+    ]
+  },
+  {
+    "term": "IBC",
+    "expansion": "Insolvency and Bankruptcy Code",
+    "category": "recovery",
+    "definition": "India's consolidated bankruptcy law enacted in 2016 establishing time-bound resolution for insolvent corporate debtors through the National Company Law Tribunal (NCLT).",
+    "synonyms": [
+      "insolvency and bankruptcy code",
+      "ibc 2016",
+      "corporate insolvency resolution"
+    ]
+  },
+  {
+    "term": "ARC",
+    "expansion": "Asset Reconstruction Company",
+    "category": "recovery",
+    "definition": "A specialized financial institution registered under RBI that buys non-performing assets from banks at a discount to resolve or liquidate them.",
+    "synonyms": [
+      "asset reconstruction company",
+      "bad bank",
+      "bad loan aggregator"
+    ]
+  },
+  {
+    "term": "MPBF",
+    "expansion": "Maximum Permissible Bank Finance",
+    "category": "commercial_credit",
+    "definition": "The maximum working capital loan limit a bank can sanction to a commercial borrower, traditionally assessed using Nayak or Tandon committee formulas.",
+    "synonyms": [
+      "maximum permissible bank finance",
+      "drawing power",
+      "cash credit facility",
+      "working capital limit",
+      "mpbf calculation"
+    ]
+  },
+  {
+    "term": "DSCR",
+    "expansion": "Debt Service Coverage Ratio",
+    "category": "commercial_credit",
+    "definition": "A measurement of commercial cash flow available to pay recurring debt service obligations: (PAT + Depreciation + Interest on Term Debt) / (Principal Repayment + Interest).",
+    "synonyms": [
+      "debt service coverage",
+      "dscr ratio"
+    ]
+  },
+  {
+    "term": "NWC",
+    "expansion": "Net Working Capital",
+    "category": "commercial_credit",
+    "definition": "The difference between current assets and current liabilities, representing the long-term capital margin deployed in everyday operations.",
+    "synonyms": [
+      "net working capital",
+      "working capital margin"
+    ]
+  },
+  {
+    "term": "PSL",
+    "expansion": "Priority Sector Lending",
+    "category": "regulatory_compliance",
+    "definition": "RBI mandate requiring domestic commercial banks to allocate at least 40% of Adjusted Net Bank Credit (ANBC) to designated sectors like agriculture, MSMEs, education, and housing.",
+    "synonyms": [
+      "priority sector lending",
+      "psl targets",
+      "priority sector advances"
+    ]
+  },
+  {
+    "term": "ANBC",
+    "expansion": "Adjusted Net Bank Credit",
+    "category": "regulatory_compliance",
+    "definition": "The benchmark credit base against which Indian banks calculate mandatory statutory allocations like Priority Sector Lending targets.",
+    "synonyms": [
+      "adjusted net bank credit",
+      "anbc base"
+    ]
+  },
+  {
+    "term": "PSLC",
+    "expansion": "Priority Sector Lending Certificate",
+    "category": "regulatory_compliance",
+    "definition": "A tradable market certificate introduced by RBI that enables banks to achieve priority sector targets by purchasing surplus allocations from other banks without risk transfer.",
+    "synonyms": [
+      "priority sector lending certificate",
+      "pslc certificate"
+    ]
+  },
+  {
+    "term": "CRAR",
+    "expansion": "Capital to Risk-Weighted Assets Ratio",
+    "category": "capital_adequacy",
+    "definition": "The ratio of a bank's capital (Tier 1 + Tier 2) to its risk-weighted assets, mandated by Basel III (minimum 9% in India, 15% for HFCs).",
+    "synonyms": [
+      "capital adequacy ratio",
+      "car ratio",
+      "crar"
+    ]
+  },
+  {
+    "term": "CET-1",
+    "expansion": "Common Equity Tier 1",
+    "category": "capital_adequacy",
+    "definition": "The highest-quality loss-absorbing regulatory capital comprising common stock, retained earnings, and statutory reserves.",
+    "synonyms": [
+      "common equity tier 1",
+      "cet1 capital",
+      "core equity"
+    ]
+  },
+  {
+    "term": "RWA",
+    "expansion": "Risk-Weighted Assets",
+    "category": "capital_adequacy",
+    "definition": "A bank's assets weighted according to their credit, market, and operational risk profiles to determine statutory capital requirements.",
+    "synonyms": [
+      "risk weighted assets",
+      "rwa"
+    ]
+  },
+  {
+    "term": "CRR",
+    "expansion": "Cash Reserve Ratio",
+    "category": "monetary_policy",
+    "definition": "The statutory percentage of Net Demand and Time Liabilities (NDTL) that commercial banks must hold in liquid cash with the Reserve Bank of India.",
+    "synonyms": [
+      "cash reserve ratio",
+      "crr requirement"
+    ]
+  },
+  {
+    "term": "SLR",
+    "expansion": "Statutory Liquidity Ratio",
+    "category": "monetary_policy",
+    "definition": "The minimum percentage of deposits that banks must invest in approved securities (such as Central Government G-Secs) or gold.",
+    "synonyms": [
+      "statutory liquidity ratio",
+      "slr requirement"
+    ]
+  },
+  {
+    "term": "CASA",
+    "expansion": "Current Account and Savings Account",
+    "category": "deposits",
+    "definition": "A low-cost deposit ratio representing the proportion of current and savings account deposits in a bank's total deposit liability base.",
+    "synonyms": [
+      "current and savings",
+      "current and savings deposits",
+      "savings and current",
+      "current account",
+      "savings account",
+      "savings account and current account",
+      "low cost deposits",
+      "savings account current account",
+      "savings and current account",
+      "casa ratio"
+    ]
+  },
+  {
+    "term": "DICGC",
+    "expansion": "Deposit Insurance and Credit Guarantee Corporation",
+    "category": "deposits",
+    "definition": "A wholly owned subsidiary of RBI providing statutory deposit insurance coverage up to ₹5 Lakhs per depositor per bank in the event of bank liquidation.",
+    "synonyms": [
+      "deposit insurance",
+      "dicgc cover",
+      "deposit guarantee"
+    ]
+  },
+  {
+    "term": "TDS",
+    "expansion": "Tax Deducted at Source",
+    "category": "taxation",
+    "definition": "Income tax withheld by banks on interest income earned from fixed and recurring deposits under Section 194A of the Income-tax Act.",
+    "synonyms": [
+      "tax deducted at source",
+      "section 194a tds",
+      "deposit tds"
+    ]
+  },
+  {
+    "term": "NRE",
+    "expansion": "Non-Resident External Account",
+    "category": "nri_banking",
+    "definition": "A rupee-denominated bank account maintained in India by non-resident Indians (NRIs) where funds and interest are completely tax-free and freely repatriable abroad.",
+    "synonyms": [
+      "non resident external",
+      "nre account",
+      "nre savings"
+    ]
+  },
+  {
+    "term": "NRO",
+    "expansion": "Non-Resident Ordinary Account",
+    "category": "nri_banking",
+    "definition": "A rupee account maintained by NRIs to manage income earned in India (such as rent, dividends, or pension), subject to Indian income tax and repatriation caps.",
+    "synonyms": [
+      "non resident ordinary",
+      "nro account"
+    ]
+  },
+  {
+    "term": "FCNR",
+    "expansion": "Foreign Currency Non-Resident Account",
+    "category": "nri_banking",
+    "definition": "A term deposit account opened by NRIs in permitted foreign currencies (USD, GBP, EUR, JPY) that shields the depositor from exchange rate fluctuations.",
+    "synonyms": [
+      "fcnr account",
+      "foreign currency deposit",
+      "fcnr(b)"
+    ]
+  },
+  {
+    "term": "KYC",
+    "expansion": "Know Your Customer",
+    "category": "compliance",
+    "definition": "Mandatory regulatory procedure of identifying and verifying the legal identity and address of customers when establishing a banking relationship.",
+    "synonyms": [
+      "customer identification",
+      "customer due diligence",
+      "cdd"
+    ]
+  },
+  {
+    "term": "AML",
+    "expansion": "Anti-Money Laundering",
+    "category": "compliance",
+    "definition": "Statutory rules, regulations, and automated screening procedures designed to prevent criminals from disguising illegally obtained funds as legitimate income.",
+    "synonyms": [
+      "anti money laundering",
+      "financial crime compliance"
+    ]
+  },
+  {
+    "term": "OVD",
+    "expansion": "Officially Valid Document",
+    "category": "compliance",
+    "definition": "The six government-authorized identity documents recognized by RBI for KYC: Passport, Driving Licence, Proof of possession of Aadhaar number, Voter ID, NREGA Card, and NPR Letter.",
+    "synonyms": [
+      "officially valid document",
+      "kyc document",
+      "identity proof"
+    ]
+  },
+  {
+    "term": "CKYC",
+    "expansion": "Central Know Your Customer Registry",
+    "category": "compliance",
+    "definition": "A centralized digital repository managed by CERSAI storing KYC records of financial sector customers, eliminating redundant re-KYC across institutions.",
+    "synonyms": [
+      "central kyc",
+      "ckyc registry",
+      "ckyc number",
+      "cersai kyc"
+    ]
+  },
+  {
+    "term": "FIU-IND",
+    "expansion": "Financial Intelligence Unit - India",
+    "category": "compliance",
+    "definition": "The central national agency responsible for receiving, processing, analyzing, and disseminating information relating to suspect financial transactions to law enforcement.",
+    "synonyms": [
+      "financial intelligence unit",
+      "fiu reporting"
+    ]
+  },
+  {
+    "term": "CTR",
+    "expansion": "Cash Transaction Report",
+    "category": "compliance",
+    "definition": "A mandatory monthly regulatory filing sent to FIU-IND documenting all cash deposits or withdrawals exceeding ₹10 Lakhs or aggregate foreign currency equivalent.",
+    "synonyms": [
+      "cash transaction report",
+      "ctr filing"
+    ]
+  },
+  {
+    "term": "STR",
+    "expansion": "Suspicious Transaction Report",
+    "category": "compliance",
+    "definition": "A confidential report that banks must file with FIU-IND within 7 days of identifying transactions with no clear economic rationale or linked to illicit activity.",
+    "synonyms": [
+      "suspicious transaction report",
+      "str filing"
+    ]
+  },
+  {
+    "term": "PEP",
+    "expansion": "Politically Exposed Person",
+    "category": "compliance",
+    "definition": "Individuals who are or have been entrusted with prominent public functions, including heads of state, politicians, and senior judicial/military figures, posing higher AML risks.",
+    "synonyms": [
+      "politically exposed person",
+      "pep check"
+    ]
+  },
+  {
+    "term": "LSP",
+    "expansion": "Lending Service Provider",
+    "category": "digital_lending",
+    "definition": "An agent of a Regulated Entity who carries out one or more of a lender's functions (customer acquisition, underwriting support, pricing, or recovery) in digital lending.",
+    "synonyms": [
+      "lending service provider",
+      "fintech partner",
+      "loan distributor"
+    ]
+  },
+  {
+    "term": "FLDG",
+    "expansion": "First Loss Default Guarantee",
+    "category": "digital_lending",
+    "definition": "A credit enhancement structure where a fintech LSP guarantees to compensate a regulated lending partner for credit defaults up to an RBI-mandated cap of 5% of the loan portfolio.",
+    "synonyms": [
+      "first loss default guarantee",
+      "fldg arrangement",
+      "default guarantee cap"
+    ]
+  },
+  {
+    "term": "UCP 600",
+    "expansion": "Uniform Customs and Practice for Documentary Credits",
+    "category": "trade_finance",
+    "definition": "The universally recognized set of rules published by the International Chamber of Commerce (ICC) governing the issuance and handling of Letters of Credit across international trade.",
+    "synonyms": [
+      "ucp 600",
+      "icc uniform customs",
+      "documentary credit rules"
+    ]
+  },
+  {
+    "term": "LC",
+    "expansion": "Letter of Credit",
+    "category": "trade_finance",
+    "definition": "A financial commitment issued by a bank on behalf of a buyer guaranteeing that payment will be made to an exporter upon presentation of compliant shipping documents.",
+    "synonyms": [
+      "letter of credit",
+      "documentary credit",
+      "commercial lc"
+    ]
+  },
+  {
+    "term": "BG",
+    "expansion": "Bank Guarantee",
+    "category": "trade_finance",
+    "definition": "An irrevocable undertaking issued by a bank to pay a beneficiary a specified sum if the bank's customer defaults on a contractual or financial obligation.",
+    "synonyms": [
+      "bank guarantee",
+      "performance guarantee",
+      "financial guarantee"
+    ]
+  },
+  {
+    "term": "ECB",
+    "expansion": "External Commercial Borrowings",
+    "category": "forex_finance",
+    "definition": "Commercial loans raised by eligible resident Indian entities from non-resident lenders, strictly regulated by RBI under the Foreign Exchange Management Act (FEMA).",
+    "synonyms": [
+      "external commercial borrowing",
+      "ecb loan",
+      "foreign currency borrowing"
+    ]
+  },
+  {
+    "term": "RB-IOS",
+    "expansion": "Reserve Bank - Integrated Ombudsman Scheme",
+    "category": "customer_protection",
+    "definition": "The single integrated grievance redressal mechanism established by RBI in 2021 covering scheduled commercial banks, NBFCs, and payment system participants.",
+    "synonyms": [
+      "rbi ombudsman",
+      "integrated ombudsman scheme",
+      "banking ombudsman"
+    ]
+  }
+]
